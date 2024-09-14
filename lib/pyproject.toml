@@ -1,0 +1,21 @@
+[project]
+name = "sp-sota-maps"
+version = "0.0.0"
+authors = [
+  { name="Piotr Majkrzak", email="piotr@majkrzak.dev" },
+]
+dependencies = [
+    "owslib",
+    "pyproj",
+    "geopandas",
+    "pandas",
+    "numpy",
+    "shapely",
+    "requests",
+    "rasterio",
+    "affine",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
