@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self, Optional
+from typing import Self, Optional, ClassVar
 from .hmap import Hmap
 from .bbox import Bbox
 from .helpers.transformer import transformer
@@ -20,21 +20,23 @@ import logging
 
 REGION_RADIUS_PYRAMID = [256, 512, 1024, 2048, 4096]
 ZONE_THRESHOLD = 25
-EPSG = 2180
 
 
 @dataclass
 class Zone:
+    EPSG: ClassVar[int] = 4362
 
     hmap: Hmap
     peak: Point
     shape: Polygon
 
-    @staticmethod
-    def find(lat: float, lon: float) -> Optional[Self]:
+    @classmethod
+    def find(cls, lat: float, lon: float) -> Optional[Self]:
         """Find the activation zone for given coordinates.
-        Coordiates are given in WGS84.
+        Coordinates are given in WGS84.
         """
+
+        hmap, region, alt = None, None, None
 
         for region_radius in REGION_RADIUS_PYRAMID:
             hmap = Hmap.find(Bbox.new(lat, lon, region_radius))
@@ -51,9 +53,7 @@ class Zone:
             ).filled(alt - ZONE_THRESHOLD, inf)
 
             if contour[0][0] is None:
-                logging.error(
-                    f"Invalid data, no contour found for {lat} {lon} at radius {region_radius}"
-                )
+                logging.error(f"Invalid data, no contour found for {lat} {lon} at radius {region_radius}")
                 continue
 
             region = min(
@@ -65,26 +65,23 @@ class Zone:
 
             lon, lat = transform(
                 Point(x, y),
-                lambda x: array(
-                    transformer(2180, 4362).transform(*(hmap.transform * x.T))
-                ).T,
+                lambda p: array(transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))).T,
             ).coords[0]
 
             if not region.within(box(10, 10, data.shape[1] - 10, data.shape[0] - 10)):
-                logging.info(
-                    f"No full coverage for {lat} {lon} at radius {region_radius}"
-                )
+                logging.info(f"No full coverage for {lat} {lon} at radius {region_radius}")
                 continue
 
             break
+
+        if not hmap or not region or not alt:
+            return
 
         return Zone(
             hmap,
             Point(lon, lat, alt),
             transform(
                 region,
-                lambda x: array(
-                    transformer(2180, 4362).transform(*(hmap.transform * x.T))
-                ).T,
+                lambda p: array(transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))).T,
             ),
         )

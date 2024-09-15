@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self, Optional
+from typing import Self, Optional, ClassVar
 from .bbox import Bbox
 from owslib.wfs import WebFeatureService
 from shapely import union_all
@@ -12,8 +12,6 @@ import numpy as np
 
 __all__ = ["Hmap"]
 
-EPSG = 2180
-
 YEARS = (2024, 2023, 2022, 2021, 2020, 2019, 2018)
 
 WFS = WebFeatureService(
@@ -25,7 +23,7 @@ WFS = WebFeatureService(
 def read_wfs(bbox, year):
     response = WFS.getfeature(
         typename=[f"gugik:SkorowidzNMT{year}"],
-        bbox=bbox.t(EPSG).r().xyxy,
+        bbox=bbox.t(2180).r().xyxy,
     )
 
     with open(f"data.xml", "wb") as f:
@@ -39,6 +37,7 @@ def read_wfs(bbox, year):
 
 @dataclass
 class Hmap:
+    EPSG: ClassVar[int] = 2180
 
     data: np.array
     bounds: Bbox
@@ -46,8 +45,8 @@ class Hmap:
     symbols: list[str]
     report: str
 
-    @staticmethod
-    def find(bbox: Bbox) -> Optional[Self]:
+    @classmethod
+    def find(cls, bbox: Bbox) -> Optional[Self]:
         """Find most recent height map data containing given bounding box."""
         for year in YEARS:
             data = read_wfs(bbox, year)
@@ -63,7 +62,7 @@ class Hmap:
             grouped = data.groupby(["blad_sr_wys", "nr_zglosz", "zrodlo_danych"])
 
             for _, group in grouped:
-                if not bbox.t(EPSG).p().covered_by(union_all(group.geometry)):
+                if not bbox.t(cls.EPSG).p().covered_by(union_all(group.geometry)):
                     continue
 
                 chunks = []
@@ -76,7 +75,7 @@ class Hmap:
                 xl, yh = transform * (0, 0)
                 xh, yl = transform * (data.shape[2], data.shape[1])
 
-                bounds = Bbox(xl, yl, xh, yh, EPSG)
+                bounds = Bbox(xl, yl, xh, yh, cls.EPSG)
 
                 return Hmap(
                     data[0, :, :],

@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 from requests import get
 from zipfile import is_zipfile, ZipFile
 
-
 CACHE_DIR = environ.get("SOTA_CACHE", "./cache")
 
 

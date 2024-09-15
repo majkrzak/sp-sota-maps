@@ -15,8 +15,8 @@ class Bbox:
     yh: float
     epsg: int
 
-    @staticmethod
-    def new(lat, lon, radius) -> Self:
+    @classmethod
+    def new(cls, lat, lon, radius) -> Self:
         """Create Bbox around given coordinates and specified radius.
         Coordinates are given in WGS84 Latitude and Longitude and
         radius is given in meters.
@@ -30,11 +30,11 @@ class Bbox:
 
     @property
     def xyxy(self):
-        return (self.xl, self.yl, self.xh, self.yh)
+        return self.xl, self.yl, self.xh, self.yh
 
     @property
     def xxyy(self):
-        return (self.xl, self.xh, self.yl, self.yh)
+        return self.xl, self.xh, self.yl, self.yh
 
     def t(self, epsg: int) -> Self:
         if epsg == self.epsg:

@@ -2,7 +2,7 @@
 name = "sp-sota-maps"
 version = "0.0.0"
 authors = [
-  { name="Piotr Majkrzak", email="piotr@majkrzak.dev" },
+    { name = "Piotr Majkrzak", email = "piotr@majkrzak.dev" },
 ]
 dependencies = [
     "owslib",
