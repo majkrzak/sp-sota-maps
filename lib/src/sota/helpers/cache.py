@@ -25,9 +25,9 @@ def download(url):
     return open(path, "rb")
 
 
-def pickled(name: str, ctor):
+def pickled(name: str, ctor=None):
     path = join(CACHE_DIR, name)
-    if not isfile(path):
+    if not isfile(path) and ctor is not None:
         obj = ctor()
         with open(path, "wb") as f:
             dump(obj, f)

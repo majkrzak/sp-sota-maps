@@ -22,7 +22,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
 
-REGION_MARGIN = 256
+REGION_MARGIN = 16
 ZONE_THRESHOLD = 25
 
 
@@ -30,9 +30,9 @@ ZONE_THRESHOLD = 25
 class Zone:
     EPSG: ClassVar[int] = 4326
 
+    shape: Polygon
     hmap: Hmap
     peak: Point
-    shape: Polygon
 
     @classmethod
     def find(cls, lat: float, lon: float, alt: float) -> Optional[Self]:
@@ -104,8 +104,8 @@ class Zone:
                 ),
             )
 
-            x, y = unravel_index(zone_data.argmax(), zone_data.shape)
-            z = zone_data[x, y]
+            y, x = unravel_index(zone_data.argmax(), zone_data.shape)
+            z = zone_data[y, x]
 
             return Point(*transform(Point(x, y), from_xy).coords[0], z)
 
@@ -113,19 +113,23 @@ class Zone:
 
             hmap = _hmap(zone)
             if hmap is None:
+                logger.error("Hmap not found!")
                 return
 
             new_zone = _zone(peak, hmap)
             if new_zone is None:
+                logger.error("Zone not found!")
                 return
 
             new_peak = _peak(new_zone, hmap)
             if new_peak is None:
+                logger.error("Peak not found!")
                 return
-            elif new_peak != peak:
-                return _find(new_peak, zone)
 
-            return Zone(hmap, peak, zone)
+            if new_peak != peak or new_zone != zone:
+                return _find(new_peak, new_zone)
+
+            return Zone(zone, hmap, peak)
 
         init = Point(lon, lat, alt)
 
