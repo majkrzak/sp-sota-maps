@@ -10,51 +10,66 @@ from shapely import (
     distance,
     from_ragged_array,
     GeometryType,
-    box,
 )
 from contourpy import contour_generator
-from numpy import array, unravel_index, append
+from numpy import array, unravel_index, round
 from numpy.ma import masked_array
 from math import inf
+from rasterio.features import rasterize
+
 import logging
 
-REGION_RADIUS_PYRAMID = [256, 512, 1024, 2048, 4096]
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+
+REGION_MARGIN = 256
 ZONE_THRESHOLD = 25
 
 
 @dataclass
 class Zone:
-    EPSG: ClassVar[int] = 4362
+    EPSG: ClassVar[int] = 4326
 
     hmap: Hmap
     peak: Point
     shape: Polygon
 
     @classmethod
-    def find(cls, lat: float, lon: float) -> Optional[Self]:
+    def find(cls, lat: float, lon: float, alt: float) -> Optional[Self]:
         """Find the activation zone for given coordinates.
         Coordinates are given in WGS84.
         """
 
-        hmap, region, alt = None, None, None
+        def _hmap(zone: Polygon | Point) -> Optional[Hmap]:
+            logger.info("Generating hmap for zone")
+            return Hmap.find(Bbox.new(zone, REGION_MARGIN))
 
-        for region_radius in REGION_RADIUS_PYRAMID:
-            hmap = Hmap.find(Bbox.new(lat, lon, region_radius))
-            data = hmap.data
-            alt = data.max()
-            y, x = unravel_index(data.argmax(), data.shape)
+        def _zone(peak: Point, hmap: Hmap) -> Optional[Polygon]:
+            logger.info(f"Generating zone for: {peak}")
+
+            def to_xy(p):
+                return array(
+                    ~hmap.transform
+                    * array(transformer(Zone.EPSG, hmap.EPSG).transform(*p.T))
+                ).T
+
+            def from_xy(p):
+                return array(
+                    transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))
+                ).T
+
+            x, y = round(transform(peak, to_xy).coords[0])
 
             contour = contour_generator(
-                z=masked_array(data, mask=~(0 < data)),
+                z=masked_array(hmap.data, mask=~(0 < hmap.data)),
                 corner_mask=True,
                 quad_as_tri=False,
                 fill_type="ChunkCombinedOffsetOffset",
                 chunk_count=(1, 1),
-            ).filled(alt - ZONE_THRESHOLD, inf)
+            ).filled(peak.z - ZONE_THRESHOLD, inf)
 
             if contour[0][0] is None:
-                logging.error(f"Invalid data, no contour found for {lat} {lon} at radius {region_radius}")
-                continue
+                return None
 
             region = min(
                 from_ragged_array(
@@ -63,25 +78,55 @@ class Zone:
                 key=lambda polygon: distance(Point(x, y), polygon),
             )
 
-            lon, lat = transform(
-                Point(x, y),
-                lambda p: array(transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))).T,
-            ).coords[0]
+            return transform(region, from_xy)
 
-            if not region.within(box(10, 10, data.shape[1] - 10, data.shape[0] - 10)):
-                logging.info(f"No full coverage for {lat} {lon} at radius {region_radius}")
-                continue
+        def _peak(zone: Polygon, hmap: Hmap) -> Point:
+            logger.info("Searching peak in zone")
 
-            break
+            def to_xy(p):
+                return array(
+                    ~hmap.transform
+                    * array(transformer(Zone.EPSG, hmap.EPSG).transform(*p.T))
+                ).T
 
-        if not hmap or not region or not alt:
-            return
+            def from_xy(p):
+                return array(
+                    transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))
+                ).T
 
-        return Zone(
-            hmap,
-            Point(lon, lat, alt),
-            transform(
-                region,
-                lambda p: array(transformer(hmap.EPSG, cls.EPSG).transform(*(hmap.transform * p.T))).T,
-            ),
-        )
+            zone_data = masked_array(
+                hmap.data,
+                mask=(
+                    rasterize(
+                        [transform(zone, to_xy)], out_shape=hmap.data.shape, fill=0
+                    )
+                    == 0
+                ),
+            )
+
+            x, y = unravel_index(zone_data.argmax(), zone_data.shape)
+            z = zone_data[x, y]
+
+            return Point(*transform(Point(x, y), from_xy).coords[0], z)
+
+        def _find(peak: Point, zone: Polygon | Point) -> Optional[Zone]:
+
+            hmap = _hmap(zone)
+            if hmap is None:
+                return
+
+            new_zone = _zone(peak, hmap)
+            if new_zone is None:
+                return
+
+            new_peak = _peak(new_zone, hmap)
+            if new_peak is None:
+                return
+            elif new_peak != peak:
+                return _find(new_peak, zone)
+
+            return Zone(hmap, peak, zone)
+
+        init = Point(lon, lat, alt)
+
+        return _find(init, init)

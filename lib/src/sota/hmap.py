@@ -39,7 +39,7 @@ def read_wfs(bbox, year):
 class Hmap:
     EPSG: ClassVar[int] = 2180
 
-    data: np.array
+    data: np.ndarray[np.float64]
     bounds: Bbox
     transform: Affine
     symbols: list[str]
@@ -82,5 +82,5 @@ class Hmap:
                     bounds,
                     transform,
                     group.godlo.tolist(),
-                    group.nr_zglosz[0],
+                    group.nr_zglosz.tolist()[0],
                 )

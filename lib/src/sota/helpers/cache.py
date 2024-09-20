@@ -3,6 +3,7 @@ from os.path import isfile, basename, join
 from urllib.parse import urlparse
 from requests import get
 from zipfile import is_zipfile, ZipFile
+from pickle import load, dump
 
 CACHE_DIR = environ.get("SOTA_CACHE", "./cache")
 
@@ -22,3 +23,14 @@ def download(url):
             f.extract(name, CACHE_DIR)
 
     return open(path, "rb")
+
+
+def pickled(name: str, ctor):
+    path = join(CACHE_DIR, name)
+    if not isfile(path):
+        obj = ctor()
+        with open(path, "wb") as f:
+            dump(obj, f)
+
+    with open(path, "rb") as f:
+        return load(f)
