@@ -31,8 +31,8 @@ class Zone:
     EPSG: ClassVar[int] = 4326
 
     shape: Polygon
-    hmap: Hmap
     peak: Point
+    hmap: Hmap
 
     @classmethod
     def find(cls, lat: float, lon: float, alt: float) -> Optional[Self]:
@@ -129,7 +129,7 @@ class Zone:
             if new_peak != peak or new_zone != zone:
                 return _find(new_peak, new_zone)
 
-            return Zone(zone, hmap, peak)
+            return Zone(zone, peak, hmap)
 
         init = Point(lon, lat, alt)
 
