@@ -12,14 +12,14 @@ class MetaSummit(type):
     SUMMITS: ClassVar[DataFrame] = fetch_summits()
 
     def __getitem__(cls, reference: Reference) -> Self:
-        if reference not in cls.SUMMITS:
+        if f"{reference}" not in cls.SUMMITS.index:
             raise KeyError()
 
-        return super()(reference)
+        return Summit(reference)
 
     def __iter__(cls) -> Iterable[Self]:
-        for reference in cls.SUMMITS:
-            yield super()(reference)
+        for reference in cls.SUMMITS.index:
+            yield Summit(reference)
 
 
 @dataclass
@@ -29,15 +29,15 @@ class Summit(metaclass=MetaSummit):
 
     @property
     def catalog_lat(self) -> float:
-        return type(self).SUMMITS[f"{self.reference}"].Latitude
+        return type(self).SUMMITS.loc[f"{self.reference}"].Latitude
 
     @property
     def catalog_lon(self) -> float:
-        return type(self).SUMMITS[f"{self.reference}"].Longitude
+        return type(self).SUMMITS.loc[f"{self.reference}"].Longitude
 
     @property
     def catalog_alt(self) -> float:
-        return type(self).SUMMITS[f"{self.reference}"].AltM
+        return type(self).SUMMITS.loc[f"{self.reference}"].AltM
 
     @property
     def zone(self) -> Zone:
