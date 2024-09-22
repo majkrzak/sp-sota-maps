@@ -59,7 +59,7 @@ class Hmap:
             chunks = []
             for url in frame.url_do_pobrania:
                 with download(url) as f:
-                    chunk = rio_open(f, DATATYPE="Float64")
+                    chunk = rio_open(f, driver="AAIGrid", DATATYPE="Float64")
                     chunks.append(chunk)
             data, transform = rio_merge(chunks)
 
