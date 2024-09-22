@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 from typing import Self, Optional, ClassVar
+
+from geopandas import GeoDataFrame
+
 from .bbox import Bbox
 from owslib.wfs import WebFeatureService
 from shapely import union_all
@@ -48,39 +51,58 @@ class Hmap:
     @classmethod
     def find(cls, bbox: Bbox) -> Optional[Self]:
         """Find most recent height map data containing given bounding box."""
+
+        def _build_zone(frame: GeoDataFrame) -> Optional[Self]:
+            if not bbox.t(cls.EPSG).p().covered_by(union_all(frame.geometry)):
+                return None
+
+            chunks = []
+            for url in frame.url_do_pobrania:
+                with download(url) as f:
+                    chunk = rio_open(f, DATATYPE="Float64")
+                    chunks.append(chunk)
+            data, transform = rio_merge(chunks)
+
+            xl, yh = transform * (0, 0)
+            xh, yl = transform * (data.shape[2], data.shape[1])
+
+            bounds = Bbox(xl, yl, xh, yh, cls.EPSG)
+
+            return Hmap(
+                data[0, :, :],
+                bounds,
+                transform,
+                frame.godlo.tolist(),
+                frame.nr_zglosz.tolist(),
+            )
+
         for year in YEARS:
-            data = read_wfs(bbox, year)
-            if data is None:
+            index = read_wfs(bbox, year)
+            if index is None:
                 continue
 
-            data = data[data.char_przestrz == "1.00 m"]
-            data = data[data.format == "ARC/INFO ASCII GRID"]
+            index = index[index.char_przestrz == "1.00 m"]
+            index = index[index.format == "ARC/INFO ASCII GRID"]
 
-            if data.empty:
+            if index.empty:
                 continue
 
-            grouped = data.groupby(["blad_sr_wys", "blad_sr_syt", "zrodlo_danych"])
-
-            for _, group in grouped:
-                if not bbox.t(cls.EPSG).p().covered_by(union_all(group.geometry)):
+            for _, group in index.groupby(["blad_sr_wys", "blad_sr_syt", "nr_zglosz"]):
+                zone = _build_zone(group)
+                if zone is None:
                     continue
+                return zone
 
-                chunks = []
-                for url in group.url_do_pobrania:
-                    with download(url) as f:
-                        chunk = rio_open(f, DATATYPE="Float64")
-                        chunks.append(chunk)
-                data, transform = rio_merge(chunks)
+            for _, group in index.groupby(
+                ["blad_sr_wys", "blad_sr_syt", "zrodlo_danych"]
+            ):
+                zone = _build_zone(group)
+                if zone is None:
+                    continue
+                return zone
 
-                xl, yh = transform * (0, 0)
-                xh, yl = transform * (data.shape[2], data.shape[1])
-
-                bounds = Bbox(xl, yl, xh, yh, cls.EPSG)
-
-                return Hmap(
-                    data[0, :, :],
-                    bounds,
-                    transform,
-                    group.godlo.tolist(),
-                    group.nr_zglosz.tolist(),
-                )
+            for _, group in index.groupby(["zrodlo_danych"]):
+                zone = _build_zone(group)
+                if zone is None:
+                    continue
+                return zone
