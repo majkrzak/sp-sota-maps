@@ -22,7 +22,7 @@ class MetaSummit(type):
 
     def __iter__(cls) -> Iterable[Self]:
         for reference in cls.SUMMITS.index:
-            yield Summit(reference)
+            yield Summit(Reference.from_str(reference))
 
 
 @dataclass
