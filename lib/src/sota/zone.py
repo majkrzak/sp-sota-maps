@@ -22,6 +22,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
 
+__all__ = ["Zone"]
+
 REGION_MARGIN = 16
 ZONE_THRESHOLD = 25
 

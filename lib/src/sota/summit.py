@@ -8,8 +8,11 @@ from .helpers.cache import download, pickled
 from .reference import Reference
 
 
+__all__ = ["Summit"]
+
+
 class MetaSummit(type):
-    SUMMITS: ClassVar[DataFrame] = fetch_summits()
+    SUMMITS: DataFrame = pickled("SUMMITS", fetch_summits)
 
     def __getitem__(cls, reference: Reference) -> Self:
         if f"{reference}" not in cls.SUMMITS.index:

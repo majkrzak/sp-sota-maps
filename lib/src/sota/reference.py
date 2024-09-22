@@ -3,6 +3,9 @@ from typing import Self, ClassVar
 from re import fullmatch, Pattern, compile
 
 
+__all__ = ["Reference"]
+
+
 @dataclass
 class Reference:
     PATTERN: ClassVar[Pattern[str]] = compile(
