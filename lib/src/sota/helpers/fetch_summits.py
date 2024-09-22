@@ -20,7 +20,7 @@ def fetch_summits():
                 [  # border summits (maybe auto based on distance?)
                     "OK/LI-003",
                     "OK/KR-001",
-                    # "OK/OL-011",# Partially in Poland, no height data available
+                    # "OK/OL-011", # Partially in Poland, no height data for peak available
                     "OK/OL-022",
                     "OK/MO-061",
                     "OM/ZA-045",
@@ -34,11 +34,9 @@ def fetch_summits():
                     "OM/PO-054",
                     "OM/PO-013",
                     "OM/PO-092",
-                    # "OM/PO-067",# Outside poland
-                    # "OM/PO-039",# Outside poland
                     "OM/PO-040",
-                    # "UT/CA-189",# Outside poland with real altitude
-                    # "UT/CA-234",# Border peek, part of height data missing
+                    # "UT/CA-189", # Partially in Poland, no height data for peak available
+                    # "UT/CA-234", # Border peek, part of zone height data missing
                 ]
             )
         )
