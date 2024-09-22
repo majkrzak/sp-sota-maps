@@ -38,7 +38,7 @@ def fetch_summits():
                     # "OM/PO-039",# Outside poland
                     "OM/PO-040",
                     # "UT/CA-189",# Outside poland with real altitude
-                    "UT/CA-234",
+                    # "UT/CA-234",# Border peek, part of height data missing
                 ]
             )
         )
