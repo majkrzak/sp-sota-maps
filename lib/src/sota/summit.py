@@ -24,6 +24,9 @@ class MetaSummit(type):
         for reference in cls.SUMMITS.index:
             yield Summit(Reference.from_str(reference))
 
+    def __len__(cls) -> int:
+        return len(cls.SUMMITS.index)
+
 
 @dataclass
 class Summit(metaclass=MetaSummit):

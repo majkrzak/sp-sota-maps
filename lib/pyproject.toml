@@ -15,6 +15,7 @@ dependencies = [
     "rasterio",
     "affine",
     "contourpy",
+    "rich",
 ]
 
 [build-system]
