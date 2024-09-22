@@ -43,7 +43,7 @@ class Hmap:
     bounds: Bbox
     transform: Affine
     symbols: list[str]
-    report: str
+    reports: list[str]
 
     @classmethod
     def find(cls, bbox: Bbox) -> Optional[Self]:
@@ -59,7 +59,7 @@ class Hmap:
             if data.empty:
                 continue
 
-            grouped = data.groupby(["blad_sr_wys", "nr_zglosz", "zrodlo_danych"])
+            grouped = data.groupby(["blad_sr_wys", "blad_sr_syt", "zrodlo_danych"])
 
             for _, group in grouped:
                 if not bbox.t(cls.EPSG).p().covered_by(union_all(group.geometry)):
@@ -82,5 +82,5 @@ class Hmap:
                     bounds,
                     transform,
                     group.godlo.tolist(),
-                    group.nr_zglosz.tolist()[0],
+                    group.nr_zglosz.tolist(),
                 )
