@@ -42,12 +42,6 @@ def fetch_summits():
         )
     ]
 
-    # Fix for Kamienna Laworta
-    summits.loc["SP/BW-003", ["Latitude", "Longitude"]] = (
-        49.44933,
-        22.56861,
-    )
-
     # Remove invalid summits
     summits = summits[summits.ValidTo == "31/12/2099"]
 

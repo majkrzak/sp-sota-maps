@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from requests import get
 from zipfile import is_zipfile, ZipFile
 from pickle import load, dump
-from lzma import open, FORMAT_XZ, PRESET_EXTREME
+from lzma import open
 
 CACHE_DIR = environ.get("SOTA_CACHE", "./cache")
 
@@ -14,7 +14,7 @@ def download(url):
     path = join(CACHE_DIR, name)
     if not isfile(path):
         response = get(url)
-        with open(path, "wb", format=FORMAT_XZ, preset=PRESET_EXTREME) as f:
+        with open(path, "wb") as f:
             f.write(response.content)
 
     if is_zipfile(path):
@@ -23,15 +23,15 @@ def download(url):
             path = join(CACHE_DIR, name)
             f.extract(name, CACHE_DIR)
 
-    return open(path, "rb", format=FORMAT_XZ)
+    return open(path, "rb")
 
 
 def pickled(name: str, ctor=None):
     path = join(CACHE_DIR, f"{name}.pickle.xz")
     if not isfile(path) and ctor is not None:
         obj = ctor()
-        with open(path, "wb", format=FORMAT_XZ, preset=PRESET_EXTREME) as f:
+        with open(path, "wb") as f:
             dump(obj, f)
 
-    with open(path, "rb", format=FORMAT_XZ) as f:
+    with open(path, "rb") as f:
         return load(f)

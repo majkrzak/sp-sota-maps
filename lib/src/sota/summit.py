@@ -1,10 +1,11 @@
-from dataclasses import dataclass
-from typing import ClassVar, Self, Iterable
-from pandas import read_csv, DataFrame
+from dataclasses import dataclass, field
+from typing import Self, Iterable, Optional
+from pandas import DataFrame
+from shapely import Point
 
 from .helpers.fetch_summits import fetch_summits
 from .zone import Zone
-from .helpers.cache import download, pickled
+from .helpers.cache import pickled
 from .reference import Reference
 
 
@@ -32,6 +33,8 @@ class MetaSummit(type):
 class Summit(metaclass=MetaSummit):
 
     reference: Reference
+    _zone: Optional[Zone] = field(init=False, default=None)
+    _peak: Optional[Point] = field(init=False, default=None)
 
     @property
     def catalog_lat(self) -> float:
@@ -47,10 +50,22 @@ class Summit(metaclass=MetaSummit):
 
     @property
     def zone(self) -> Zone:
-        zone = pickled(
-            f"{self.reference:slug}.zone",
-            lambda: Zone.find(self.catalog_lat, self.catalog_lon, self.catalog_alt),
-        )
-        if zone is None:
+        if self._zone is None:
+            self._zone = pickled(
+                f"{self.reference:slug}.zone",
+                lambda: Zone.find(self.catalog_lat, self.catalog_lon, self.catalog_alt),
+            )
+        if self._zone is None:
             raise ValueError()
-        return zone
+        return self._zone
+
+    @property
+    def peak(self) -> Point:
+        if self._peak is None:
+            self._peak = pickled(
+                f"{self.reference:slug}.peak",
+                lambda: self.zone.peak,
+            )
+        if self._peak is None:
+            raise ValueError()
+        return self._peak
