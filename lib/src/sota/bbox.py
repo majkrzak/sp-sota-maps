@@ -80,3 +80,7 @@ class Bbox:
 
     def p(self) -> Polygon:
         return box(*self.xyxy)
+
+    @property
+    def absolute_radius(self) -> float:
+        return max(abs(self.xl - self.xh), abs(self.yl - self.yh))
