@@ -8,6 +8,7 @@ logging.basicConfig(handlers=[RichHandler()])
 from ..summit import Summit
 from ..plotters import Config
 from ..plotters.zone import plot_zone
+from ..plotters.isolines import plot_isolines
 
 
 def main() -> int:
@@ -20,10 +21,17 @@ def main() -> int:
         TaskProgressColumn(),
         TextColumn("{task.fields[extra]}"),
     ) as progress:
-        task = progress.add_task("Ploting zones", total=len(Summit), extra="")
+        task = progress.add_task("Plotting zones", total=len(Summit), extra="")
         for summit in Summit:
             progress.update(task, extra=f"{summit.reference}")
             plot_zone(plot_config, summit)
+            progress.advance(task)
+        progress.update(task, extra="done!")
+
+        task = progress.add_task("Plotting isolines", total=len(Summit), extra="")
+        for summit in Summit:
+            progress.update(task, extra=f"{summit.reference}")
+            plot_isolines(plot_config, summit)
             progress.advance(task)
         progress.update(task, extra="done!")
     return 0
