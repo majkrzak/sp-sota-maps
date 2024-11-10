@@ -17,12 +17,6 @@ def download(url):
         with open(path, "wb") as f:
             f.write(response.content)
 
-    if is_zipfile(path):
-        with ZipFile(path) as f:
-            name = f.namelist()[0]
-            path = join(CACHE_DIR, name)
-            f.extract(name, CACHE_DIR)
-
     return open(path, "rb")
 
 
