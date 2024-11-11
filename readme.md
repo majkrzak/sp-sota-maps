@@ -40,3 +40,10 @@ To run the map plotting process, execute the following:
 ```sh
 python -m sota.scripts.plot_maps
 ```
+
+
+TODO-s
+------
+
+- Hmap bounding box have Y-s swapped.
+- Optimize (if possible isilines plotting)
