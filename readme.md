@@ -41,9 +41,23 @@ To run the map plotting process, execute the following:
 python -m sota.scripts.plot_maps
 ```
 
+### Rendering base maps
+
+OpenStreetMap Carto have to be prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
+Poland OSM data is required: https://download.geofabrik.de/europe/poland-latest.osm.pbf
+
+```sh
+npx carto project.mml > carto.xml
+```
+
+```sh
+python -m sota.scripts.render_base_maps
+```
+
 
 TODO-s
 ------
 
 - Hmap bounding box have Y-s swapped.
 - Use masked array in Hmap-s
+- Replace map build cpp with python C extension
