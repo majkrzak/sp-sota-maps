@@ -20,12 +20,5 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools >= 61.0"]
+requires = ["setuptools >= 61.0", "pkgconfig"]
 build-backend = "setuptools.build_meta"
-
-
-[[tool.setuptools.ext-modules]]
-name = "sota.render_carto"
-sources = ["src/sota/render_carto.cpp"]
-libraries = ["mapnik", "mapnikwkt", "mapnikjson", "icui18n", "icuuc", "icudata", "harfbuzz", "freetype", "xml2", "png16", "jpeg", "tiff", "webp", "cairo", "proj"]
-extra-compile-args = ["-I/usr/include/mapnik", "-I/usr/include/mapnik/agg", "-DMAPNIK_THREADSAFE", "-DBOOST_REGEX_HAS_ICU", "-DBIGINT", "-DMAPNIK_MEMORY_MAPPED_FILE", "-DHAVE_LIBXML2", "-DHAVE_PNG", "-DHAVE_JPEG", "-DHAVE_TIFF", "-DHAVE_WEBP", "-DHAVE_CAIRO", "-DMAPNIK_USE_PROJ", "-DMAPNIK_PROJ_VERSION=90401", "-DGRID_RENDERER", "-DSVG_RENDERER", "-DMAPNIK_HAS_DLCFN", "-I/usr/include/harfbuzz", "-I/usr/include/libxml2", "-I/usr/include/cairo", "-I/usr/include/libpng16", "-I/usr/include/freetype2", "-I/usr/include/glib-2.0", "-I/usr/lib/glib-2.0/include", "-I/usr/include/sysprof-6", "-pthread", "-I/usr/include/webp", "-I/usr/include/pixman-1"]

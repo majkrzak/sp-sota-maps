@@ -26,6 +26,7 @@ PyObject *render_carto(PyObject *self, PyObject *args) {
   map.zoom_to_box(mapnik::box2d<double>(xl, yl, xh, yh));
   mapnik::save_to_cairo_file(map, file);
 
+
   Py_RETURN_NONE;
 }
 
