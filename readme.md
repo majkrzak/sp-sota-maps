@@ -46,4 +46,4 @@ TODO-s
 ------
 
 - Hmap bounding box have Y-s swapped.
-- Optimize (if possible isilines plotting)
+- Use masked array in Hmap-s
