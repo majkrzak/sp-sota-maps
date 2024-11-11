@@ -8,6 +8,7 @@ logging.basicConfig(handlers=[RichHandler()])
 
 from ..summit import Summit
 from ..helpers.view_port import ViewPort
+from ..render_carto import render_carto
 
 
 def main() -> int:
@@ -22,20 +23,13 @@ def main() -> int:
         for summit in Summit:
             progress.update(task, extra=f"{summit.reference}")
             vp = ViewPort.new(0.210, 0.148, 0.02, summit)
-
-            res = run(
-                [
-                    "./lib/map_build/map_builder",
-                    f"{vp.figsize[0]*72}",
-                    f"{vp.figsize[1]*72}",
-                    f"epsg:{vp.epsg}",
-                    *map(str, vp.bbox.xyxy),
-                    f"./output/{summit.reference:slug}.osm.pdf",
-                ]
+            render_carto(
+                int(vp.figsize[0] * 72),
+                int(vp.figsize[1] * 72),
+                f"epsg:{vp.epsg}",
+                *vp.bbox.xyxy,
+                f"./output/{summit.reference:slug}.osm.pdf",
             )
-
-            logging.info("", res)
-
             progress.advance(task)
         progress.update(task, extra="done!")
 

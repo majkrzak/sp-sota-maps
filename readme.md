@@ -61,3 +61,6 @@ TODO-s
 - Hmap bounding box have Y-s swapped.
 - Use masked array in Hmap-s
 - Replace map build cpp with python C extension
+- Improve render_carto to not look like a crap
+- Use libmapnik pkg-config
+
