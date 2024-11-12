@@ -37,6 +37,10 @@ class Summit(metaclass=MetaSummit):
     _peak: Optional[Point] = field(init=False, default=None)
 
     @property
+    def name(self) -> str:
+        return type(self).SUMMITS.loc[f"{self.reference}"].SummitName
+
+    @property
     def catalog_lat(self) -> float:
         return type(self).SUMMITS.loc[f"{self.reference}"].Latitude
 

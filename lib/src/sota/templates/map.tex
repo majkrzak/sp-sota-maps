@@ -20,10 +20,10 @@
 \begin{tikzpicture}[remember picture,overlay]
 
 \node [
-    shape=rectangle,
-    minimum width=\textwidth,
-    minimum height=\textheight,
-    anchor=center
+shape=rectangle,
+minimum width=\textwidth,
+minimum height=\textheight,
+anchor=center
 ](map) at (current page.center) {};
 
 \begin{scope}
@@ -36,26 +36,23 @@
 \draw[thick] (map.north west) rectangle (map.south east);
 
 \node[
-    below right=1mm,
-    align=center,
-    fill=white,
-    draw=black,
-    inner sep=2mm,
-    text width=5.5cm
+below right=1mm,
+align=center,
+fill=white,
+draw=black,
+inner sep=2mm,
+text width=5.5cm
 ] at (map.north west)
 {
-    \setlength{\parskip}{10pt}
-
-    {% include 'scalebar.tex' %}
-    {% include 'summitinfo.tex' %}
-
-
+\setlength{\parskip}{10pt}
+{% include 'scalebar.tex' %}
+{% include 'summitinfo.tex' %}
 };
 
 
 \node[
-    anchor=north east,
-    font=\fontsize{3pt}{0pt}\selectfont,
+anchor=north east,
+font=\fontsize{3pt}{0pt}\selectfont,
 ] at (map.south east) {Arkusz poglądowy z dnia 2024-07-11 \hspace{5em} Numeryczny Model Terenu © \href{https://www.gugik.gov.pl}{GUGiK} \hspace{2em} Podkład © \href{https://www.openstreetmap.org/}{OpenStreetMap}};
 
 \end{tikzpicture}

@@ -17,7 +17,7 @@ class Reference:
     id: int
 
     def __format__(self, format_spec: str) -> str:
-        if format_spec == "":
+        if format_spec == "" or format_spec == "full":
             return f"{self.association}/{self.region}-{self.id:03}"
         elif format_spec == "slug":
             return f"{self.association}{self.region}{self.id:03}"
