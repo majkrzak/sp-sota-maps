@@ -39,17 +39,3 @@ def main() -> int:
 if __name__ == "__main__":
     exit(main())
 
-
-# Build osm map
-for index, summit in SUMMITS[
-    SUMMITS.ActivationZone.apply(lambda x: not x.is_empty)
-].iterrows():
-    if isfile(f"out/{summit.Slug}.osm.pdf"):
-        continue
-
-    scale = pick_scale(summit.ActivationZone, RADIUS, SCALES)
-    epsg = pick_epsg(summit.Longitude, scale)
-    bbox = scaled_bobx_epsg(summit.ActivationZone, *SIZE, scale, epsg)
-
-    width = int(SIZE[0] * 72 * M2I)
-    height = int(SIZE[1] * 72 * M2I)
