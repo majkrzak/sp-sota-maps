@@ -24,7 +24,9 @@ def main(overwrite: bool) -> int:
         TaskProgressColumn(),
     ) as progress:
         tasks = {
-            Layer.name: progress.add_task(f"Rendering {Layer.name} layer")
+            Layer.name: progress.add_task(
+                f"Rendering {Layer.name} layer", total=len(Summit)
+            )
             for Layer in LAYERS
         }
 
