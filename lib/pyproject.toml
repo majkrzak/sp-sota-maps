@@ -18,6 +18,8 @@ dependencies = [
     "rich",
     "cartopy",
     "jinja2",
+    "click",
+    "rich-click",
 ]
 
 [build-system]
