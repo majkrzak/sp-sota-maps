@@ -8,6 +8,8 @@ import cartopy.crs as ccrs
 from .render_carto import render_carto
 from os.path import join, isfile
 from typing import Self, Iterable
+from numpy.ma import masked_array
+from math import floor, ceil
 
 OUTPUT_DIR = environ.get("SOTA_OUTPUT", "./output")
 
@@ -44,11 +46,11 @@ class PyplotLayer(Layer):
         fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
 
         ax = fig.add_subplot(projection=ccrs.epsg(self.view_port.epsg))
-        ax.set_extent(view_port.bbox.xxyy, crs=ccrs.epsg(self.view_port.epsg))
+        ax.set_extent(self.view_port.bbox.xxyy, crs=ccrs.epsg(self.view_port.epsg))
 
         self.plot(ax)
 
-        fig.savefig(path, transparent=True)
+        fig.savefig(self.path, transparent=True)
 
     @abstractmethod
     def plot(self, fig: Figure, ax: Axes) -> None:
@@ -78,7 +80,7 @@ class IsolinesLayer(PyplotLayer):
     name = "isolines"
 
     def plot(self, ax) -> None:
-        hmap = summit.zone.hmap
+        hmap = self.summit.zone.hmap
         data = masked_array(hmap.data, mask=~(0 < hmap.data))
 
         ax.contour(
