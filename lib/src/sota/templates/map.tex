@@ -14,6 +14,7 @@
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
+\endlinechar=-1
 
 
 \begin{document}
@@ -26,12 +27,7 @@ minimum height=\textheight,
 anchor=center
 ](map) at (current page.center) {};
 
-\begin{scope}
-\clip (map.north west) rectangle (map.south east);
-{% for layer in layers %}
-\node[anchor=center] at (map.center) {\includegraphics[height=\paperheight,width=\paperwidth]{<slug>.<layer>.pdf}};
-{% endfor %}
-\end{scope}
+{% include 'layers.tex' %}
 
 \draw[thick] (map.north west) rectangle (map.south east);
 
@@ -44,7 +40,6 @@ inner sep=2mm,
 text width=5.5cm
 ] at (map.north west)
 {
-\setlength{\parskip}{10pt}
 {% include 'scalebar.tex' %}
 {% include 'summitinfo.tex' %}
 };

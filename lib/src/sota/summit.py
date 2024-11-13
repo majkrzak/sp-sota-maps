@@ -41,6 +41,18 @@ class Summit(metaclass=MetaSummit):
         return type(self).SUMMITS.loc[f"{self.reference}"].SummitName
 
     @property
+    def lat(self) -> str:
+        return self.zone.peak.y
+
+    @property
+    def lon(self) -> str:
+        return self.zone.peak.x
+
+    @property
+    def alt(self) -> str:
+        return self.zone.peak.z
+
+    @property
     def catalog_lat(self) -> float:
         return type(self).SUMMITS.loc[f"{self.reference}"].Latitude
 
