@@ -62,3 +62,4 @@ TODO-s
 - Use masked array in Hmap-s
 - Replace map build cpp with python C extension
 - Improve render_carto to not look like a crap
+- Fix nasty PGA list

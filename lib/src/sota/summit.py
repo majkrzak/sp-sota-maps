@@ -5,6 +5,7 @@ from shapely import Point
 
 from .helpers.fetch_summits import fetch_summits
 from .zone import Zone
+from .gmina import Gmina
 from .helpers.cache import pickled
 from .reference import Reference
 
@@ -35,6 +36,7 @@ class Summit(metaclass=MetaSummit):
     reference: Reference
     _zone: Optional[Zone] = field(init=False, default=None)
     _peak: Optional[Point] = field(init=False, default=None)
+    _gminas: Optional[list[Gmina]] = field(init=False, default=None)
 
     @property
     def name(self) -> str:
@@ -85,3 +87,14 @@ class Summit(metaclass=MetaSummit):
         if self._peak is None:
             raise ValueError()
         return self._peak
+
+    @property
+    def gminas(self) -> list[Gmina]:
+        if self._gminas is None:
+            self._gminas = pickled(
+                f"{self.reference:slug}.gminas",
+                lambda: Gmina.find(self.zone.shape),
+            )
+        if self._gminas is None:
+            raise ValueError()
+        return self._gminas
