@@ -20,6 +20,7 @@ def main() -> int:
             progress.update(task, extra=f"{summit.reference}")
             _ = summit.zone
             _ = summit.peak
+            _ = summit.gminas
             progress.advance(task)
         progress.update(task, extra="done!")
     return 0
