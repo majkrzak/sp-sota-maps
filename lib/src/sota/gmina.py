@@ -21,13 +21,7 @@ def read_wfs(bbox):
         bbox=bbox.t(2180).r().xyxy,
     )
 
-    with open(f"data.xml", "wb") as f:
-        f.write(response.read())
-
-    try:
-        return gpd.read_file("data.xml")
-    except:
-        return None
+    return gpd.read_file(response)
 
 
 @dataclass
