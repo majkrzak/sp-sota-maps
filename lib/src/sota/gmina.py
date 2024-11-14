@@ -189,7 +189,7 @@ class Gmina:
 
     @property
     def pga(self):
-        return PGA[self.id]
+        return self.PGA[self.id]
 
     @classmethod
     def find(cls, shape: Polygon) -> list[Self]:

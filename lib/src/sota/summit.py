@@ -40,7 +40,9 @@ class Summit(metaclass=MetaSummit):
 
     @property
     def name(self) -> str:
-        return type(self).SUMMITS.loc[f"{self.reference}"].SummitName
+        return (
+            type(self).SUMMITS.loc[f"{self.reference}"].SummitName.split("(")[0].strip()
+        )
 
     @property
     def lat(self) -> str:
