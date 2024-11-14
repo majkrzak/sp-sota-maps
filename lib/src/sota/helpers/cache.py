@@ -2,7 +2,6 @@ from os import environ
 from os.path import isfile, basename, join
 from urllib.parse import urlparse
 from requests import get
-from zipfile import is_zipfile, ZipFile
 from pickle import load, dump
 from lzma import open
 

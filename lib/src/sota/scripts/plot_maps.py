@@ -2,13 +2,12 @@ from sys import exit
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.logging import RichHandler
 import logging
-
-logging.basicConfig(handlers=[RichHandler()])
-
 from ..summit import Summit
 from ..plotters import Config
 from ..plotters.zone import plot_zone
 from ..plotters.isolines import plot_isolines
+
+logging.basicConfig(handlers=[RichHandler()])
 
 
 def main() -> int:

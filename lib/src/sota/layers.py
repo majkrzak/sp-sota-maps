@@ -3,11 +3,10 @@ from dataclasses import dataclass
 from os import environ
 from .summit import Summit
 from .helpers.view_port import ViewPort
-from matplotlib.pyplot import Figure, Axes, axes
+from matplotlib.pyplot import Figure, Axes
 import cartopy.crs as ccrs
 from .render_carto import render_carto
 from os.path import join, isfile
-from typing import Self, Iterable
 from numpy.ma import masked_array
 from math import floor, ceil
 

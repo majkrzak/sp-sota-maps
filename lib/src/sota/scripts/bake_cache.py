@@ -2,10 +2,9 @@ from sys import exit
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.logging import RichHandler
 import logging
+from ..summit import Summit
 
 logging.basicConfig(handlers=[RichHandler()])
-
-from ..summit import Summit
 
 
 def main() -> int:
@@ -21,6 +20,7 @@ def main() -> int:
             _ = summit.zone
             _ = summit.peak
             _ = summit.gminas
+            _ = summit.parks
             progress.advance(task)
         progress.update(task, extra="done!")
     return 0
