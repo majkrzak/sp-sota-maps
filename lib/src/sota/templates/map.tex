@@ -47,5 +47,21 @@ text width=5.5cm
 {% include 'parks.tex' %}
 };
 
+\node[
+anchor=north east,
+font=\fontsize{4pt}{0pt}\selectfont,
+] at (map.south east) {
+Numeryczny Model Terenu © \href{https://www.gugik.gov.pl}{GUGiK}
+\hspace{2em}
+Podkład © autorzy \href{https://www.openstreetmap.org/copyright}{OpenStreetMap}
+};
+
+\node[
+anchor=north west,
+font=\fontsize{4pt}{0pt}\selectfont,
+] at (map.south west) {
+\href{https://github.com/majkrzak/sp-sota-maps}{\texttt{majkrzak/sp-sota-maps}}
+};
+
 \end{tikzpicture}
 \end{document}
