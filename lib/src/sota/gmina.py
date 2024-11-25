@@ -21,7 +21,10 @@ def read_wfs(bbox):
         bbox=bbox.t(2180).r().xyxy,
     )
 
-    return gpd.read_file(response)
+    try:
+        return gpd.read_file(response)
+    except:
+        return None
 
 
 @dataclass
