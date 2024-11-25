@@ -60,6 +60,7 @@ TODO-s
 
 - Hmap bounding box have Y-s swapped.
 - Use masked array in Hmap-s
-- Replace map build cpp with python C extension
 - Improve render_carto to not look like a crap
 - Fix nasty PGA list
+- Unify font sizes
+- Add version and render date referecnecs
