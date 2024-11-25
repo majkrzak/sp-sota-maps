@@ -6,7 +6,7 @@ from ..summit import Summit
 from concurrent.futures import ThreadPoolExecutor
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.logging import RichHandler
-from ..helpers.view_port import ViewPort
+from ..view_port import ViewPort
 import logging
 
 
@@ -32,7 +32,7 @@ def main(overwrite: bool) -> int:
 
         for summit in Summit:
 
-            view_port = ViewPort.new(0.210, 0.148, 0.02, summit)
+            view_port = ViewPort.a5paper(summit)
 
             for Layer in LAYERS:
 

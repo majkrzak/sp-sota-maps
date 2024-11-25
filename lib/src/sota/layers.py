@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from os import environ
 from .summit import Summit
-from .helpers.view_port import ViewPort
+from .view_port import ViewPort
 from matplotlib.pyplot import Figure, Axes
 import cartopy.crs as ccrs
 from .render_carto import render_carto

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Self
 from math import floor, ceil
 
-from ..bbox import Bbox
-from ..summit import Summit
+from .bbox import Bbox
+from .summit import Summit
 
 
 @dataclass
@@ -45,6 +45,10 @@ class ViewPort:
         return ViewPort(
             width, height, scaled_bobx(bbox.t(epsg), width, height, scale), scale
         )
+
+    @classmethod
+    def a5paper(cls, summit: Summit):
+        return cls.new(0.210, 0.148, 0.02, summit)
 
 
 def scaled_bobx(bbox: Bbox, width: float, height: float, scale: int) -> Bbox:

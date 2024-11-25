@@ -1,14 +1,13 @@
 from sys import exit
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.logging import RichHandler
-from subprocess import run
 import logging
 
-logging.basicConfig(handlers=[RichHandler()])
-
 from ..summit import Summit
-from ..helpers.view_port import ViewPort
+from ..view_port import ViewPort
 from ..layers import CartoLayer
+
+logging.basicConfig(handlers=[RichHandler()])
 
 
 def main() -> int:
@@ -22,7 +21,7 @@ def main() -> int:
         task = progress.add_task("Plotting zones", total=len(Summit), extra="")
         for summit in Summit:
             progress.update(task, extra=f"{summit.reference}")
-            CartoLayer(summit, ViewPort.new(0.210, 0.148, 0.02, summit)).render()
+            CartoLayer(summit, ViewPort.a5paper(summit)).render()
             progress.advance(task)
         progress.update(task, extra="done!")
 
