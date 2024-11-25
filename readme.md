@@ -61,6 +61,8 @@ TODO-s
 - Hmap bounding box have Y-s swapped.
 - Use masked array in Hmap-s
 - Improve render_carto to not look like a crap
+- Split carto layer rendering
 - Fix nasty PGA list
 - Unify font sizes
 - Add version and render date referecnecs
+- Fix hmap download (see SP/BS-029)

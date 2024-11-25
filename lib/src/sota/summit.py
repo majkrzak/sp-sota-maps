@@ -27,7 +27,7 @@ def _fetch_summits() -> DataFrame:
         | (
             summits.index.isin(
                 [  # border summits (maybe auto based on distance?)
-                    "OK/LI-003",
+                    # "OK/LI-003", # Partially in Poland, no height data for one of the peaks available
                     "OK/KR-001",
                     # "OK/OL-011", # Partially in Poland, no height data for peak available
                     "OK/OL-022",
