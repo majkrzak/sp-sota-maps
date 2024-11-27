@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
-from pyproj import Geod, CRS, Transformer
+from pyproj import Geod
 from typing import Self
 from math import floor, ceil
 from shapely import box, Polygon
 from shapely.geometry.base import BaseGeometry
+from .helpers.transformer import transformer
 
 __all__ = ["Bbox"]
 
@@ -66,12 +67,7 @@ class Bbox:
         if epsg == self.epsg:
             return self
 
-        transform = Transformer.from_crs(
-            CRS.from_epsg(self.epsg), CRS.from_epsg(epsg), always_xy=True
-        ).transform
-        xl, yl = transform(self.xl, self.yl)
-        xh, yh = transform(self.xh, self.yh)
-        return Bbox(xl, yl, xh, yh, epsg)
+        return Bbox(*transformer(self.epsg, epsg).transform_bounds(*self.xyxy), epsg)
 
     def r(self) -> Self:
         return Bbox(
