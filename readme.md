@@ -30,30 +30,19 @@ To run the baking, execute the following:
 python -m sota.scripts.bake_cache
 ```
 
-### Plotting the base maps
+### Rendering map layers
 
 All maps layers will be plotted and saved as pdf files.
 Output directory is sepcified by the `SOTA_OUTPUT` environment variable and defaults to `./output`.
 
+Aditionally, OpenStreetMap Carto have to be prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
+Poland OSM data is required: https://download.geofabrik.de/europe/poland-latest.osm.pbf
+
 To run the map plotting process, execute the following:
 
 ```sh
-python -m sota.scripts.plot_maps
+python -m sota.scripts.render
 ```
-
-### Rendering base maps
-
-OpenStreetMap Carto have to be prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
-Poland OSM data is required: https://download.geofabrik.de/europe/poland-latest.osm.pbf
-
-```sh
-npx carto project.mml > carto.xml
-```
-
-```sh
-python -m sota.scripts.render_base_maps
-```
-
 
 TODO-s
 ------
@@ -62,5 +51,6 @@ TODO-s
 - Use masked array in Hmap-s
 - Improve render_carto to not look like a crap
 - Split carto layer rendering
-- Fix nasty PGA list
+- Fix nasty PGA and Parks lists
 - Unify font sizes
+- etc...
