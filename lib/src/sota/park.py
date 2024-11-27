@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self, ClassVar
+from typing import Self
 from shapely import Polygon, Point
 from owslib.wfs import WebFeatureService
 from shapely.ops import transform

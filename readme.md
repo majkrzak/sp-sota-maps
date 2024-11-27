@@ -64,5 +64,3 @@ TODO-s
 - Split carto layer rendering
 - Fix nasty PGA list
 - Unify font sizes
-- Add version and render date referecnecs
-- Fix hmap download (see SP/BS-029)
