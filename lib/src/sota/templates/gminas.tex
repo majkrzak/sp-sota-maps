@@ -1,0 +1,7 @@
+{%- for gmina in summit.gminas %}
+\begin{minipage}[t]{<(1/summit.gminas|length)-0.017>\textwidth}\centering\setlength{\parskip}{2pt}
+\fontsize{15pt}{0pt}\selectfont \texttt{<gmina.pga>}\par
+\fontsize{7pt}{0pt}\selectfont <gmina.name>\par
+\end{minipage}
+{%- endfor -%}
+\par

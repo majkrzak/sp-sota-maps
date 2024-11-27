@@ -1,0 +1,71 @@
+\documentclass{minimal}
+
+\usepackage{fontspec}
+\usepackage[a5paper,margin=5mm,noheadfoot,landscape]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+
+
+\pagestyle{empty}
+
+\setsansfont{CMU Sans Serif}
+\setmainfont{CMU Serif}
+\setmonofont{CMU Typewriter Text}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\endlinechar=-1
+
+
+\begin{document}
+\begin{tikzpicture}[remember picture,overlay]
+
+\node [
+shape=rectangle,
+minimum width=\textwidth,
+minimum height=\textheight,
+anchor=center
+](map) at (current page.center) {};
+
+{% include 'layers.tex' %}
+
+\draw[thick] (map.north west) rectangle (map.south east);
+
+\node[
+below right=1mm,
+align=center,
+fill=white,
+draw=black,
+inner sep=2mm,
+text width=5.5cm
+] at (map.north west)
+{
+\setlength{\parskip}{10pt}
+{% include 'scalebar.tex' %}
+{% include 'summitinfo.tex' %}
+{% include 'gminas.tex' %}
+{% include 'parks.tex' %}
+};
+
+\node[
+anchor=north east,
+font=\fontsize{5pt}{0pt}\selectfont\sffamily,
+] at (map.south east) {
+Numeryczny Model Terenu © \href{https://www.gugik.gov.pl}{GUGiK}
+\hspace{2em}
+Podkład © autorzy \href{https://www.openstreetmap.org/copyright}{OpenStreetMap}
+};
+
+\node[
+anchor=north west,
+font=\fontsize{5pt}{0pt}\selectfont\ttfamily,
+] at (map.south west) {
+\href{https://github.com/majkrzak/sp-sota-maps}{majkrzak/sp-sota-maps}
+\hspace{1em}
+<version>
+\hspace{1em}
+<date>
+};
+
+\end{tikzpicture}
+\end{document}

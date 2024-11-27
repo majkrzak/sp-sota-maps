@@ -1,0 +1,6 @@
+\begin{scope}
+\clip (map.north west) rectangle (map.south east);
+{%- for layer in layers %}
+\node[anchor=center] at (map.center) {\includegraphics[height=\paperheight,width=\paperwidth]{<slug>.<layer>.pdf}};
+{%- endfor %}
+\end{scope}

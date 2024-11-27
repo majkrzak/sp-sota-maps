@@ -1,0 +1,6 @@
+{%- for park in summit.parks %}
+\begin{minipage}{\textwidth}\centering\setlength{\parskip}{2pt}
+\fontsize{15pt}{0pt}\selectfont \href{https://pota.app/#/park/<park.pota>}{\texttt{<park.pota>\hbox{}}}\hfill\texttt{<park.wwff>\hbox{}}\par
+\fontsize{7pt}{0pt}\selectfont <park.name>\par
+\end{minipage}\par
+{%- endfor %}
