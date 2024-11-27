@@ -1,6 +1,8 @@
 SP SOTA MAPS
 ============
 
+![example](example.png)
+
 Aim of the project is to prepare a set of SOTA activation cheatsheet maps congaing the activation zone and other useful
 features, like grid square reference or nearby references from other programs.
 
