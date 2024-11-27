@@ -4,6 +4,7 @@ from rich_click import RichCommand
 from typing import Optional
 from concurrent.futures import ThreadPoolExecutor
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
+from rich.logging import RichHandler
 import logging
 
 logging.basicConfig(handlers=[RichHandler()])
@@ -11,7 +12,6 @@ logging.basicConfig(handlers=[RichHandler()])
 from ..layers import LAYERS
 from ..summit import Summit
 from ..reference import Reference
-from rich.logging import RichHandler
 from ..view_port import ViewPort
 
 
