@@ -20,8 +20,8 @@ PyObject *render_carto(PyObject *self, PyObject *args) {
   mapnik::Map map(width, height);
 
   mapnik::load_map(map,
-                   "/home/majkrzak/Development/openstreetmap-carto/carto.xml",
-                   false, "/home/majkrzak/Development/openstreetmap-carto");
+                   "../openstreetmap-carto/carto.xml",
+                   false, "../openstreetmap-carto");
   map.set_srs(epsg);
   map.zoom_to_box(mapnik::box2d<double>(xl, yl, xh, yh));
   mapnik::save_to_cairo_file(map, file);
