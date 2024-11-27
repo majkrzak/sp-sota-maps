@@ -2,9 +2,10 @@ from sys import exit
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 from rich.logging import RichHandler
 import logging
-from ..summit import Summit
 
 logging.basicConfig(handlers=[RichHandler()])
+
+from ..summit import Summit
 
 
 def main() -> int:
