@@ -1,4 +1,4 @@
-name: Web
+name: Build and Deploy to GitHub Pages
 on:
   workflow_dispatch:
 permissions:
@@ -13,9 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin
+          ~/.cargo/git
+          ~/.cargo/registry
+        key: cargo
     - run: rustup target add wasm32-unknown-unknown
     - run: cargo install --locked trunk
-    - run: trunk build --release
+    - run: trunk build --public-url ${{ github.event.repository.name }} --release
       working-directory: ./web
     - uses: actions/configure-pages@v5
     - uses: actions/upload-pages-artifact@v3
