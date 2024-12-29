@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: |
           ~/.cargo/bin
@@ -22,7 +22,7 @@ jobs:
         key: cargo
     - run: rustup target add wasm32-unknown-unknown
     - run: cargo install --locked trunk
-    - run: trunk build --public-url ${{ github.event.repository.name }} --release
+    - run: trunk build --public-url /sp-sota-maps --release
       working-directory: ./web
     - uses: actions/configure-pages@v5
     - uses: actions/upload-pages-artifact@v3
