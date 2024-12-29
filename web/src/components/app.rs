@@ -13,7 +13,7 @@ pub fn component() -> Html {
                 </nav>
             </header>
             <main>
-                <img src="//github.com/majkrzak/sp-sota-maps/blob/master/example.png"/>
+                <img src="https://raw.githubusercontent.com/majkrzak/sp-sota-maps/refs/heads/master/example.png"/>
             </main>
             <footer>
                 <p>{"SP-SOTA-MAPS © 2024 Piotr Majkrzak"}</p>
