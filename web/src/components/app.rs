@@ -6,8 +6,8 @@ pub fn component() -> Html {
         <>
             <header>
                 <nav>
-                    <a href="/">{"Home"}</a>
-                    <a href="/">{"Downloads"}</a>
+                    <a href="#">{"Home"}</a>
+                    <a href="#downloads">{"Downloads"}</a>
                     <a href="https://github.com/majkrzak/sp-sota-maps">{"GitHub"}</a>
                     <h1>{"SP SOTA MAPS"}</h1>
                 </nav>
