@@ -21,7 +21,7 @@ jobs:
           ~/.cargo/registry
         key: cargo
     - run: rustup target add wasm32-unknown-unknown
-    - run: cargo install --locked trunk
+    - run: which trunk || cargo install --locked trunk
     - run: trunk build --public-url /sp-sota-maps --release
       working-directory: ./web
     - uses: actions/configure-pages@v5
