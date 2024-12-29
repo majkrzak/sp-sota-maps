@@ -1,0 +1,7 @@
+[package]
+name = "sp-sota-maps"
+authors = ["Piotr Majkrzak <piotr@majkrzak.dev>"]
+edition = "2021"
+
+[dependencies]
+yew = { version = "0.21.0", features = ["csr"] }
