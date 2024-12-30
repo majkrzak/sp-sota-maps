@@ -4,5 +4,8 @@ authors = ["Piotr Majkrzak <piotr@majkrzak.dev>"]
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.95"
+nom = "7.1.3"
+thiserror = "2.0.9"
 yew = { version = "0.21.0", features = ["csr"] }
 yew-router = "0.18.0"
