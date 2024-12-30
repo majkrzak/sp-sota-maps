@@ -1,7 +1,10 @@
 use yew::{function_component, html, Html};
 use yew_router::{prelude::Link, HashRouter, Routable, Switch};
 
-use crate::components::{about::About, downloads::Downloads, not_found::NotFound};
+use crate::{
+    components::{about::About, downloads::Downloads, not_found::NotFound, summit::Summit},
+    model::reference::Reference,
+};
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -9,6 +12,8 @@ enum Route {
     About,
     #[at("/downloads")]
     Downloads,
+    #[at("/*reference")]
+    Summit { reference: Reference },
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -33,6 +38,7 @@ pub fn component() -> Html {
                             match route{
                                 Route::About => html! { <About/> },
                                 Route::Downloads => html! { <Downloads/> },
+                                Route::Summit{reference} => html! { <Summit {reference} /> },
                                 Route::NotFound => html! { <NotFound/> },
                             }
                         }

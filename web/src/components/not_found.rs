@@ -4,6 +4,7 @@ use yew::{function_component, html, Html};
 pub fn component() -> Html {
     html! {
         <>
+          {"404"}
         </>
     }
 }
