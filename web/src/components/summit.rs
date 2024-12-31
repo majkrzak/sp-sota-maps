@@ -1,6 +1,7 @@
 use yew::{function_component, html, Html, Properties};
+use yew_router::prelude::Link;
 
-use crate::model::reference::Reference;
+use crate::{model::reference::Reference, router::Route};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -11,7 +12,7 @@ pub struct Props {
 pub fn component(props: &Props) -> Html {
     html! {
         <article>
-            <h3>{props.reference.full()}</h3>
+            <h3><Link<Route> to={Route::Summit{reference:props.reference.clone()}}>{props.reference.full()}</Link<Route>></h3>
             <nav>
                 <a style="margin:0 .5em" href={format!("https://www.sotadata.org.uk/summit/{}",props.reference.full())}>{"sotadata.org.uk"}</a>
                 <a style="margin:0 .5em" href={format!("https://sotl.as/summits/{}",props.reference.full())}>{"sotl.as"}</a>
