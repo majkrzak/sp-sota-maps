@@ -2,7 +2,7 @@ use yew::{function_component, html, Html};
 use yew_router::{prelude::Link, HashRouter, Routable, Switch};
 
 use crate::{
-    components::{about::About, downloads::Downloads, not_found::NotFound, summit::Summit},
+    components::{about::About, not_found::NotFound, summit::Summit, summits::Summits},
     model::reference::Reference,
 };
 
@@ -10,8 +10,8 @@ use crate::{
 enum Route {
     #[at("/")]
     About,
-    #[at("/downloads")]
-    Downloads,
+    #[at("/summits")]
+    Summits,
     #[at("/*reference")]
     Summit { reference: Reference },
     #[not_found]
@@ -26,8 +26,8 @@ pub fn component() -> Html {
             <HashRouter>
                 <header>
                     <nav>
-                        <Link<Route> to={Route::About}>{ "Home" }</Link<Route>>
-                        <Link<Route> to={Route::Downloads}>{ "Downloads" }</Link<Route>>
+                        <Link<Route> to={Route::About}>{ "About" }</Link<Route>>
+                        <Link<Route> to={Route::Summits}>{ "About" }</Link<Route>>
                         <a href="https://github.com/majkrzak/sp-sota-maps">{"GitHub"}</a>
                         <h1>{"SP SOTA MAPS"}</h1>
                     </nav>
@@ -37,7 +37,7 @@ pub fn component() -> Html {
                         |route|{
                             match route{
                                 Route::About => html! { <About/> },
-                                Route::Downloads => html! { <Downloads/> },
+                                Route::Summits => html! { <Summits/> },
                                 Route::Summit{reference} => html! { <Summit {reference} /> },
                                 Route::NotFound => html! { <NotFound/> },
                             }
