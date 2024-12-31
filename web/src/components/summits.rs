@@ -1,9 +1,22 @@
-use yew::{function_component, html, Html};
+use yew::{function_component, html, use_context, Html};
+
+use crate::components::summit_brief::SummitBrief;
 
 #[function_component(Summits)]
 pub fn component() -> Html {
+    let summits = use_context::<Vec<crate::model::summit::Summit>>().expect("no context");
+
     html! {
         <>
+            <ul>
+                {
+                    summits.iter().map(|summit| {
+                        html!{
+                            <SummitBrief reference={summit.reference.clone()}/>
+                        }
+                    }).collect::<Html>()
+                }
+            </ul>
         </>
     }
 }

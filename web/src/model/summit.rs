@@ -2,9 +2,11 @@ use serde::Deserialize;
 
 use super::reference::Reference;
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct Summit {
-    #[serde(alias = "summitCode")]
     pub reference: Reference,
-    name: String,
+    pub name: String,
+    pub lat: f32,
+    pub lon: f32,
+    pub alt: f32,
 }
