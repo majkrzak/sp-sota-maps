@@ -5,6 +5,7 @@ use nom::{
     character::complete::{alpha0, char},
     combinator::{eof, map, map_parser, map_res, opt},
 };
+use serde::{de, Deserialize, Deserializer};
 use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -64,6 +65,16 @@ impl FromStr for Reference {
             region,
             id,
         })
+    }
+}
+
+impl<'de> Deserialize<'de> for Reference {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        FromStr::from_str(&s).map_err(de::Error::custom)
     }
 }
 

@@ -1,23 +1,7 @@
-use yew::{function_component, html, Html};
-use yew_router::{prelude::Link, HashRouter, Routable, Switch};
+use yew::{function_component, html, Html, Suspense};
+use yew_router::{prelude::Link, HashRouter, Switch};
 
-use crate::{
-    components::{about::About, not_found::NotFound, summit::Summit, summits::Summits},
-    model::reference::Reference,
-};
-
-#[derive(Clone, Routable, PartialEq)]
-enum Route {
-    #[at("/")]
-    About,
-    #[at("/summits")]
-    Summits,
-    #[at("/*reference")]
-    Summit { reference: Reference },
-    #[not_found]
-    #[at("/404")]
-    NotFound,
-}
+use crate::router::{render, Route};
 
 #[function_component(App)]
 pub fn component() -> Html {
@@ -33,16 +17,9 @@ pub fn component() -> Html {
                     </nav>
                 </header>
                 <main>
-                    <Switch<Route> render={
-                        |route|{
-                            match route{
-                                Route::About => html! { <About/> },
-                                Route::Summits => html! { <Summits/> },
-                                Route::Summit{reference} => html! { <Summit {reference} /> },
-                                Route::NotFound => html! { <NotFound/> },
-                            }
-                        }
-                    } />
+                    <Suspense>
+                        <Switch<Route> {render}/>
+                    </Suspense>
                 </main>
                 <footer>
                     <p>{"SP-SOTA-MAPS © 2024 Piotr Majkrzak"}</p>
