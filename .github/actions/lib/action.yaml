@@ -1,0 +1,16 @@
+name: Run helper lib
+description: Runs sp-sota-maps python helper library
+
+inputs:
+  script:
+    required: true
+  args:
+    required: false
+    default: ""
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    SCRIPT: ${{ inputs.SCRIPT }}
+    ARGS: ${{ inputs.ARGS }}
