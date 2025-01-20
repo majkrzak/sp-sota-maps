@@ -2,7 +2,7 @@ FROM debian:trixie-slim
 
 RUN apt-get python3-pip libmapnik-dev
 
-COPY lib/ lib/
+COPY ../../../ .
 
 RUN pip install ./lib/
 
