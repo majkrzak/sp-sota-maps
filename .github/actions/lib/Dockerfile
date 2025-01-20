@@ -1,4 +1,4 @@
-FROM debian:trixe-slim
+FROM debian:trixie-slim
 
 RUN apt-get python3-pip libmapnik-dev
 
