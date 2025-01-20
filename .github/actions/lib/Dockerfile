@@ -1,6 +1,6 @@
 FROM debian:trixie-slim
 
-RUN apt update && apt install python3-pip libmapnik-dev
+RUN apt -y update && apt -y install python3-pip libmapnik-dev
 
 COPY ../../../ .
 
