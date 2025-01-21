@@ -17,9 +17,10 @@ jobs:
         key: cargo
     - run: rustup target add wasm32-unknown-unknown
     - run: which trunk || cargo install --locked trunk
-    - run: trunk build --public-url /sp-sota-maps --release
+    - id: config
+      uses: actions/configure-pages@v5
+    - run: trunk build --public-url ${{ steps.config.outputs.base_url }} --release
       working-directory: ./web
-    - uses: actions/configure-pages@v5
     - uses: actions/upload-pages-artifact@v3
       with:
         path: ./web/dist
@@ -29,6 +30,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       id-token: write
+      pages: write
     runs-on: ubuntu-latest
     needs: build
     steps:
