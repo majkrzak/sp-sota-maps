@@ -31,7 +31,7 @@ pub fn component(props: &Props) -> Html {
                     <a style="margin:0 .5em" href={format!("https://www.sotadata.org.uk/summit/{}",summit.reference.full())}>{"sotadata.org.uk"}</a>
                     <a style="margin:0 .5em" href={format!("https://sotl.as/summits/{}",summit.reference.full())}>{"sotl.as"}</a>
                 </nav>
-                <img src={format!("https://github.com/majkrzak/sp-sota-maps/releases/download/0.0.0/{}.png",summit.reference.slug())}/>
+                <img src={format!("https://github.com/majkrzak/sp-sota-maps/releases/download/0.0.0/{}.avif",summit.reference.slug())}/>
                 <section>
                     <h4>{"Downloads"}</h4>
                     <nav>

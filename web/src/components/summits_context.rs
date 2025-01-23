@@ -19,7 +19,7 @@ pub fn component(props: &Props) -> HtmlResult {
     let release = use_context::<Release>().expect("no release context");
 
     match *use_future(|| async move {
-        let data = Request::get(format!("https://api.allorigins.win/raw?url=https://github.com/majkrzak/sp-sota-maps/releases/download/{}/_summits.csv", release.tag_name).as_str())
+        let data = Request::get(format!("https://api.allorigins.win/raw?url=https://github.com/majkrzak/sp-sota-maps/releases/download/{}/summits.csv", release.tag_name).as_str())
             .send()
             .await?
             .text()
