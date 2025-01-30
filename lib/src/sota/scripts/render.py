@@ -19,7 +19,7 @@ from ..view_port import ViewPort
 @option("-r", "--overwrite", type=bool, default=False)
 @option("-s", "--reference", type=str)
 def main(overwrite: bool, reference: Optional[str]) -> int:
-    executor = ThreadPoolExecutor(max_workers=5)
+    executor = ThreadPoolExecutor(max_workers=1)
 
     summits = Summit if not reference else [Summit[Reference.from_str(reference)]]
 
