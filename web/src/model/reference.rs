@@ -4,6 +4,7 @@ use nom::{
     bytes::complete::take,
     character::complete::{alpha0, char},
     combinator::{eof, map, map_parser, map_res, opt},
+    Parser,
 };
 use serde::{de, Deserialize, Deserializer};
 use thiserror::Error;
@@ -31,7 +32,7 @@ impl Display for Reference {
 }
 
 #[derive(Error, Debug, PartialEq)]
-#[error("Can not parse summit reference. Valid vormats are AA/BB-000 and AABB000.")]
+#[error("Can not parse summit reference. Valid formats are AA/BB-000 and AABB000.")]
 pub struct ReferenceParseError(nom::Err<nom::error::Error<String>>);
 
 impl From<nom::Err<nom::error::Error<&str>>> for ReferenceParseError {
@@ -46,17 +47,19 @@ impl FromStr for Reference {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (s, association) = map(map_parser(take(2u32), alpha0), |x| {
             String::from(x).to_ascii_uppercase()
-        })(s)?;
+        })
+        .parse(s)?;
 
-        let (s, _) = opt(char('/'))(s)?;
+        let (s, _) = opt(char('/')).parse(s)?;
 
         let (s, region) = map(map_parser(take(2u32), alpha0), |x| {
             String::from(x).to_ascii_uppercase()
-        })(s)?;
+        })
+        .parse(s)?;
 
-        let (s, _) = opt(char('-'))(s)?;
+        let (s, _) = opt(char('-')).parse(s)?;
 
-        let (s, id) = map_res(take(3u32), str::parse)(s)?;
+        let (s, id) = map_res(take(3u32), str::parse).parse(s)?;
 
         eof(s)?;
 

@@ -29,7 +29,7 @@ pub fn component() -> Html {
                     </Suspense>
                 </main>
                 <footer>
-                    <p>{"SP-SOTA-MAPS © 2024 Piotr Majkrzak"}</p>
+                    <p>{"SP-SOTA-MAPS © 2025 Piotr Majkrzak"}</p>
                 </footer>
             </HashRouter>
         </>

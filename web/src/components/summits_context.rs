@@ -19,11 +19,17 @@ pub fn component(props: &Props) -> HtmlResult {
     let release = use_context::<Release>().expect("no release context");
 
     match *use_future(|| async move {
-        let data = Request::get(format!("https://api.allorigins.win/raw?url=https://github.com/majkrzak/sp-sota-maps/releases/download/{}/summits.csv", release.tag_name).as_str())
-            .send()
-            .await?
-            .text()
-            .await?;
+        let data = Request::get(
+            format!(
+                "https://api.allorigins.win/raw?url={}",
+                release.asset("summits.csv").unwrap().browser_download_url
+            )
+            .as_str(),
+        )
+        .send()
+        .await?
+        .text()
+        .await?;
 
         fn parse_csv<D: DeserializeOwned, R: io::Read>(rdr: R) -> csv::Result<Vec<D>> {
             csv::Reader::from_reader(rdr).into_deserialize().collect()
