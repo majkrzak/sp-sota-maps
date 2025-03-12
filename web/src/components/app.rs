@@ -4,6 +4,7 @@ use yew_router::{prelude::Link, HashRouter, Switch};
 use crate::{
     components::{release_context::ReleaseContext, summits_context::SummitsContext},
     router::{render, Route},
+    views::loading::loading,
 };
 
 #[function_component(App)]
@@ -20,7 +21,7 @@ pub fn component() -> Html {
                     </nav>
                 </header>
                 <main>
-                    <Suspense>
+                    <Suspense fallback={loading()}>
                         <ReleaseContext>
                             <SummitsContext>
                                 <Switch<Route> {render}/>
