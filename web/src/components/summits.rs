@@ -1,6 +1,6 @@
 use yew::{function_component, html, use_context, Html};
 
-use crate::components::summit_brief::SummitBrief;
+use crate::views::summit::summit_brief;
 
 #[function_component(Summits)]
 pub fn component() -> Html {
@@ -9,13 +9,7 @@ pub fn component() -> Html {
     html! {
         <>
             <ul>
-                {
-                    summits.iter().map(|summit| {
-                        html!{
-                            <SummitBrief reference={summit.reference.clone()}/>
-                        }
-                    }).collect::<Html>()
-                }
+                { summits.iter().map(summit_brief).collect::<Html>() }
             </ul>
         </>
     }
