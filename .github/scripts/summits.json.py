@@ -5,6 +5,7 @@ from sota.reference import Reference
 from sota.gmina import Gmina
 from sota.park import Park
 from json import dump
+from pyproj import Geod
 
 
 def serializer(obj):
@@ -18,9 +19,14 @@ def serializer(obj):
             "gminas": obj.gminas,
             "parks": obj.parks,
             "insights": {
-                "lat_diff": round(obj.lat - obj.catalog_lat, 4),
-                "lon_diff": round(obj.lon - obj.catalog_lon, 4),
-                "alt_diff": round(obj.alt - obj.catalog_alt, 2),
+                "elevation": round(obj.alt - obj.catalog_alt, 2),
+                "distance": round(
+                    Geod("+ellps=WGS84").line_length(
+                        [round(obj.lat, 4), round(obj.catalog_lat, 4)],
+                        [round(obj.lon, 4), round(obj.catalog_lon, 4)],
+                    ),
+                    2,
+                ),
             },
             "hmap": {
                 "symbols": obj.zone.hmap.symbols,
@@ -40,7 +46,7 @@ def serializer(obj):
             "pota": obj.pota,
             "wwff": obj.wwff,
         }
-    raise TypeError(f"{obj.__class__.__name__} is not JSON serializable")
+    raise TypeError(f"{obj.__class__.__name__} {obj} is not JSON serializable")
 
 
 def main() -> int:
