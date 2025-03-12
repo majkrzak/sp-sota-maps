@@ -12,6 +12,7 @@ pub struct Release {
     pub name: String,
     pub html_url: String,
     pub tag_name: String,
+    pub body: String,
     pub assets: Vec<Asset>,
 }
 

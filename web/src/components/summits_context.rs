@@ -1,13 +1,7 @@
-use std::io;
+use base64::{prelude::BASE64_STANDARD, Engine};
+use yew::{function_component, html, use_context, ContextProvider, Html, HtmlResult, Properties};
 
-use gloo_net::http::Request;
-use serde::de::DeserializeOwned;
-use yew::{
-    function_component, html, suspense::use_future, use_context, ContextProvider, Html, HtmlResult,
-    Properties,
-};
-
-use crate::model::release::Release;
+use crate::model::{release::Release, summit::Summit};
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
@@ -18,32 +12,22 @@ pub struct Props {
 pub fn component(props: &Props) -> HtmlResult {
     let release = use_context::<Release>().expect("no release context");
 
-    match *use_future(|| async move {
-        let data = Request::get(
-            format!(
-                "https://api.allorigins.win/raw?url={}",
-                release.asset("summits.csv").unwrap().browser_download_url
-            )
-            .as_str(),
-        )
-        .send()
-        .await?
-        .text()
-        .await?;
+    let mut reader = std::io::Cursor::new(
+        BASE64_STANDARD
+            .decode(release.body.replace(&['`', '\n', '\r'], ""))
+            .expect("not valid base64"),
+    );
+    let mut decomp: Vec<u8> = Vec::new();
 
-        fn parse_csv<D: DeserializeOwned, R: io::Read>(rdr: R) -> csv::Result<Vec<D>> {
-            csv::Reader::from_reader(rdr).into_deserialize().collect()
-        }
+    lzma_rs::xz_decompress(&mut reader, &mut decomp).expect("not an lzma");
 
-        let summits = parse_csv(data.as_bytes())?;
+    let json_string = String::from_utf8(decomp).expect("not a UTF8 string");
 
-        <Result<Vec<crate::model::summit::Summit>, anyhow::Error>>::Ok(summits)
-    })? {
-        Ok(ref summits) => Ok(html! {
-            <ContextProvider<Vec<crate::model::summit::Summit>> context={summits.clone()}>
-                { props.children.clone() }
-            </ContextProvider<Vec<crate::model::summit::Summit>>>
-        }),
-        Err(_) => Ok(html! {{"ERROR"}}),
-    }
+    let summits: Vec<Summit> = serde_json::from_str(json_string.as_str()).expect("not valid json");
+
+    Ok(html! {
+        <ContextProvider<Vec<Summit>> context={summits.clone()}>
+            { props.children.clone() }
+        </ContextProvider<Vec<Summit>>>
+    })
 }
