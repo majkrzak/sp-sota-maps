@@ -8,9 +8,8 @@ from lzma import open
 CACHE_DIR = environ.get("SOTA_CACHE", "./cache")
 
 
-def download(url):
-    name = f"{basename(urlparse(url).path)}.xz"
-    path = join(CACHE_DIR, name)
+def download(url, name=None):
+    path = join(CACHE_DIR, f"{name or basename(urlparse(url).path)}.xz")
     if not isfile(path):
         response = get(url)
         with open(path, "wb") as f:

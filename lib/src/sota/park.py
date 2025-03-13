@@ -13,46 +13,6 @@ from .data import parks
 __all__ = ["Park"]
 
 
-TYPES = [
-    "GDOS:ParkiNarodowe",
-    "GDOS:ParkiKrajobrazowe",
-    "GDOS:Rezerwaty",
-    "GDOS:ObszaryChronionegoKrajobrazu",
-    "GDOS:ZespolyPrzyrodniczoKrajobrazowe",
-    "GDOS:ObszarySpecjalnejOchrony",
-    "GDOS:SpecjalneObszaryOchrony",
-    "GDOS:PomnikiPrzyrodyPowierzchniowe",
-    "GDOS:UzytkiEkologiczne",
-]
-
-WFS = WebFeatureService(
-    url="https://sdi.gdos.gov.pl/wfs",
-    version="1.1.0",
-    # auth=Authentication(None, None, None, False),
-)
-
-
-def read_wfs(bbox):
-    response = WFS.getfeature(
-        typename=TYPES,
-        bbox=bbox.t(2180).xyxy,
-    )
-
-    data = []
-    for typ in TYPES:
-        try:
-            data.append(gpd.read_file(response, layer=typ[5:]))
-        except:
-            pass
-
-    if not len(data):
-        return GeoDataFrame(
-            {"nazwa": ["otulina"], "kodinspire": ["abs"], "geometry": [Point(0, 0)]}
-        )
-    else:
-        return concat(data)
-
-
 @dataclass
 class Park:
     name: str
@@ -61,6 +21,48 @@ class Park:
 
     @classmethod
     def find(self, shape: Polygon) -> list[Self]:
+
+        TYPES = [
+            "GDOS:ParkiNarodowe",
+            "GDOS:ParkiKrajobrazowe",
+            "GDOS:Rezerwaty",
+            "GDOS:ObszaryChronionegoKrajobrazu",
+            "GDOS:ZespolyPrzyrodniczoKrajobrazowe",
+            "GDOS:ObszarySpecjalnejOchrony",
+            "GDOS:SpecjalneObszaryOchrony",
+            "GDOS:PomnikiPrzyrodyPowierzchniowe",
+            "GDOS:UzytkiEkologiczne",
+        ]
+
+        WFS = WebFeatureService(
+            url="https://sdi.gdos.gov.pl/wfs",
+            version="1.1.0",
+            # auth=Authentication(None, None, None, False),
+        )
+
+        def read_wfs(bbox):
+            response = WFS.getfeature(
+                typename=TYPES,
+                bbox=bbox.t(2180).xyxy,
+            )
+
+            data = []
+            for typ in TYPES:
+                try:
+                    data.append(gpd.read_file(response, layer=typ[5:]))
+                except:
+                    pass
+
+            if not len(data):
+                return GeoDataFrame(
+                    {
+                        "nazwa": ["otulina"],
+                        "kodinspire": ["abs"],
+                        "geometry": [Point(0, 0)],
+                    }
+                )
+            else:
+                return concat(data)
 
         data = read_wfs(Bbox.new(shape, 100))
 

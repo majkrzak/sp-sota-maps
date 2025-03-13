@@ -6,26 +6,37 @@ from sota.gmina import Gmina
 from sota.park import Park
 from json import dump
 from pyproj import Geod
+from functools import partial
 
 
 def serializer(obj):
+    g = Geod("+ellps=WGS84")
+    r2 = partial(round, ndigits=2)
+    r4 = partial(round, ndigits=4)
+
     if isinstance(obj, Summit):
         return {
             "reference": obj.reference,
             "name": obj.name,
-            "lat": round(obj.lat, 4),
-            "lon": round(obj.lon, 4),
-            "alt": round(obj.alt, 2),
+            "lat": r4(obj.lat),
+            "lon": r4(obj.lon),
+            "alt": r2(obj.alt),
             "gminas": obj.gminas,
             "parks": obj.parks,
             "insights": {
-                "elevation": round(obj.alt - obj.catalog_alt, 2),
-                "distance": round(
-                    Geod("+ellps=WGS84").line_length(
-                        [round(obj.lat, 4), round(obj.catalog_lat, 4)],
-                        [round(obj.lon, 4), round(obj.catalog_lon, 4)],
-                    ),
-                    2,
+                "elevation": r2(obj.alt - obj.catalog_alt),
+                "distance": r2(
+                    g.line_length(
+                        [r4(obj.lat), r4(obj.catalog_lat)],
+                        [r4(obj.lon), r4(obj.catalog_lon)],
+                    )
+                ),
+                "total_area": r2(abs(g.geometry_area_perimeter(obj.zone.shape)[0])),
+                "polish_area": sum(
+                    (
+                        r2(abs(g.geometry_area_perimeter(gmina.shape)[0]))
+                        for gmina in obj.gminas
+                    )
                 ),
             },
             "hmap": {
