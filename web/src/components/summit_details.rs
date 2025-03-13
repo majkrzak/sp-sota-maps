@@ -73,6 +73,13 @@ pub fn component(props: &Props) -> Html {
                 </section>
                 <section>
                     <h4>{ "Insights" }</h4>
+                    <p class="notice">
+                        { "Calculations are based on data over " }
+                        { summit.hmap.symbols.join(", ") }
+                        { " map symbols, from " }
+                        { summit.hmap.reports.join(", ") }
+                        { " cartographic reports. Those are the most recent sources provided by GUGiK." }
+                    </p>
                     { {
                         let percentage = summit.insights.polish_area / summit.insights.total_area * 100.0;
                         if  percentage > 50.0 && summit.reference.association == "SP" {
@@ -103,17 +110,17 @@ pub fn component(props: &Props) -> Html {
                         let tolarance = 1.0;
                         if summit.insights.elevation > tolarance {
                             html! {
-                                <p>{format!("❌ Calculated peak altitude is greater than catalog one by ")} <mark> {format!{"{} m",summit.insights.elevation}} </mark> {"."} </p>
+                                <p>{"❌ Calculated peak altitude ("}{summit.alt}{"m) is greater than catalog one by "} <mark> {format!{"{} m",summit.insights.elevation}} </mark> {"."} </p>
                             }
                         }
                         else if summit.insights.elevation < -tolarance {
                             html! {
-                                <p>{format!("❌ Calculated peak altitude is lower than catalog one by ")} <mark> {format!{"{} m",-summit.insights.elevation}} </mark> {"."} </p>
+                                <p>{"❌ Calculated peak altitude ("}{summit.alt}{"m) is lower than catalog one by "} <mark> {format!{"{} m",-summit.insights.elevation}} </mark> {"."} </p>
                             }
                         }
                         else {
                             html! {
-                                <p>{format!("✔️ Calculated peak altitude is OK.")} </p>
+                                <p>{"✔️ Calculated peak altitude ("}{summit.alt}{"m) is OK."} </p>
                             }
                         }
                     } }
@@ -121,12 +128,32 @@ pub fn component(props: &Props) -> Html {
                         let tolarance = 10.0;
                         if summit.insights.distance > tolarance {
                             html! {
-                                <p>{format!("❌ Calculated peak position differs from catalog one by ")} <mark> {format!{"{} m",summit.insights.distance}} </mark> {"."} </p>
+                                <p>
+                                    { "❌ Calculated peak position (" }
+                                    { summit.lat }
+                                    { "E" }
+                                    { " " }
+                                    { summit.lon }
+                                    { "N" }
+                                    { ") differs from catalog one by " }
+                                    <mark>
+                                        {format!{"{} m",summit.insights.distance}}
+                                    </mark>
+                                    { "." }
+                                </p>
                             }
                         }
                         else {
                             html! {
-                                <p>{format!("✔️ Calculated peak position is OK.")} </p>
+                                <p>
+                                    { "✔️ Calculated peak position (" }
+                                    { summit.lat }
+                                    { "E" }
+                                    { " " }
+                                    { summit.lon }
+                                    { "N" }
+                                    { ") is OK." }
+                                </p>
                             }
                         }
                     } }
