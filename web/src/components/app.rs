@@ -16,21 +16,21 @@ pub fn component() -> Html {
                     <nav>
                         <Link<Route> to={Route::About}>{ "About" }</Link<Route>>
                         <Link<Route> to={Route::Summits}>{ "Summits" }</Link<Route>>
-                        <a href="https://github.com/majkrzak/sp-sota-maps">{"GitHub"}</a>
-                        <h1>{"SP SOTA MAPS"}</h1>
+                        <a href="https://github.com/majkrzak/sp-sota-maps">{ "GitHub" }</a>
+                        <h1>{ "SP SOTA MAPS" }</h1>
                     </nav>
                 </header>
                 <main>
                     <Suspense fallback={loading()}>
                         <ReleaseContext>
                             <SummitsContext>
-                                <Switch<Route> {render}/>
+                                <Switch<Route> {render} />
                             </SummitsContext>
                         </ReleaseContext>
                     </Suspense>
                 </main>
                 <footer>
-                    <p>{"SP-SOTA-MAPS © 2025 Piotr Majkrzak"}</p>
+                    <p>{ "SP-SOTA-MAPS © 2025 Piotr Majkrzak" }</p>
                 </footer>
             </HashRouter>
         </>

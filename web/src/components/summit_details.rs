@@ -20,28 +20,60 @@ pub fn component(props: &Props) -> Html {
         Some(summit) => html! {
             <article>
                 <h3>
-                    <Link<Route> to={Route::Summit{reference:summit.reference.clone()}}>{summit.reference.full()}</Link<Route>>
-                    {", "}
-                    {summit.name.clone()}
-                    {" – "}
-                    {format!("{:0.0}m",summit.alt)}
+                    <Link<Route> to={Route::Summit{reference:summit.reference.clone()}}>
+                        { summit.reference.full() }
+                    </Link<Route>>
+                    { ", " }
+                    { summit.name.clone() }
+                    { " – " }
+                    { format!("{:0.0}m",summit.alt) }
                 </h3>
                 <nav>
-                    <a style="margin:0 .5em" href={format!("https://www.sotadata.org.uk/summit/{}",summit.reference.full())}>{"sotadata.org.uk"}</a>
-                    <a style="margin:0 .5em" href={format!("https://sotl.as/summits/{}",summit.reference.full())}>{"sotl.as"}</a>
+                    <a
+                        style="margin:0 .5em"
+                        href={format!("https://www.sotadata.org.uk/summit/{}",summit.reference.full())}
+                    >
+                        { "sotadata.org.uk" }
+                    </a>
+                    <a
+                        style="margin:0 .5em"
+                        href={format!("https://sotl.as/summits/{}",summit.reference.full())}
+                    >
+                        { "sotl.as" }
+                    </a>
                 </nav>
-                <img src={release.asset(format!("{}.avif",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}/>
+                <img
+                    src={release.asset(format!("{}.avif",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}
+                />
                 <section>
-                    <h4>{"Downloads"}</h4>
+                    <h4>{ "Downloads" }</h4>
                     <nav>
-                        <a class="button" style="margin:0 .5em" href={release.asset(format!("{}.pdf",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}>{"A5 PDF"}</a>
-                        <a class="button" style="margin:0 .5em" href={release.asset(format!("{}.png",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}>{"1440p PNG"}</a>
-                        <a class="button" style="margin:0 .5em" href={release.asset(format!("{}.avif",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}>{"1440p AVIF"}</a>
+                        <a
+                            class="button"
+                            style="margin:0 .5em"
+                            href={release.asset(format!("{}.pdf",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}
+                        >
+                            { "A5 PDF" }
+                        </a>
+                        <a
+                            class="button"
+                            style="margin:0 .5em"
+                            href={release.asset(format!("{}.png",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}
+                        >
+                            { "1440p PNG" }
+                        </a>
+                        <a
+                            class="button"
+                            style="margin:0 .5em"
+                            href={release.asset(format!("{}.avif",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}
+                        >
+                            { "1440p AVIF" }
+                        </a>
                     </nav>
                 </section>
                 <section>
-                    <h4>{"Insights"}</h4>
-                    {{
+                    <h4>{ "Insights" }</h4>
+                    { {
                         let percentage = summit.insights.polish_area / summit.insights.total_area * 100.0;
                         if  percentage > 50.0 && summit.reference.association == "SP" {
                             html!{
@@ -66,8 +98,8 @@ pub fn component(props: &Props) -> Html {
                         else {
                             html! {<p> {"Error"} </p>}
                         }
-                    }}
-                    {{
+                    } }
+                    { {
                         let tolarance = 1.0;
                         if summit.insights.elevation > tolarance {
                             html! {
@@ -84,8 +116,8 @@ pub fn component(props: &Props) -> Html {
                                 <p>{format!("✔️ Calculated peak altitude is OK.")} </p>
                             }
                         }
-                    }}
-                    {{
+                    } }
+                    { {
                         let tolarance = 10.0;
                         if summit.insights.distance > tolarance {
                             html! {
@@ -97,10 +129,10 @@ pub fn component(props: &Props) -> Html {
                                 <p>{format!("✔️ Calculated peak position is OK.")} </p>
                             }
                         }
-                    }}
+                    } }
                 </section>
             </article>
         },
-        None => html! {{"todo"}},
+        None => html! { { "todo" } },
     }
 }

@@ -23,11 +23,11 @@ pub enum Route {
 
 pub fn render(route: Route) -> Html {
     match route {
-        Route::About => html! { <About/> },
-        Route::Summits => html! { <Summits/> },
+        Route::About => html! { <About /> },
+        Route::Summits => html! { <Summits /> },
         Route::Summit { reference } => {
             html! { <SummitDetails {reference} /> }
         }
-        Route::NotFound => html! { <NotFound/> },
+        Route::NotFound => html! { <NotFound /> },
     }
 }

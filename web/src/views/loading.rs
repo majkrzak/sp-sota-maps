@@ -1,7 +1,5 @@
 use yew::{html, Html};
 
 pub fn loading() -> Html {
-    html! {
-        <p> {"Loading..."} </p>
-    }
+    html! { <p>{ "Loading..." }</p> }
 }

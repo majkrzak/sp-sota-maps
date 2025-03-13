@@ -24,6 +24,6 @@ pub fn component(props: &Props) -> HtmlResult {
                 { props.children.clone() }
             </ContextProvider<Release>>
         }),
-        Err(_) => Ok(html! {{"ERROR"}}),
+        Err(_) => Ok(html! { { "ERROR" } }),
     }
 }

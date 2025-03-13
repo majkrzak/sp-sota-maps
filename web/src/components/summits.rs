@@ -8,9 +8,7 @@ pub fn component() -> Html {
 
     html! {
         <>
-            <ul>
-                { summits.iter().map(summit_brief).collect::<Html>() }
-            </ul>
+            <ul>{ summits.iter().map(summit_brief).collect::<Html>() }</ul>
         </>
     }
 }

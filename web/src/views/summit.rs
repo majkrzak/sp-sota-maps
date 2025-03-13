@@ -7,11 +7,11 @@ pub fn summit_brief(summit: &Summit) -> Html {
     html! {
         <p>
             <Link<Route> to={Route::Summit{reference:summit.reference.clone()}}>
-                {summit.reference.full()}
-                {", "}
-                {summit.name.clone()}
-                {" – "}
-                {format!("{:0.0}m",summit.alt)}
+                { summit.reference.full() }
+                { ", " }
+                { summit.name.clone() }
+                { " – " }
+                { format!("{:0.0}m",summit.alt) }
             </Link<Route>>
         </p>
     }
