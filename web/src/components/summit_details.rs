@@ -39,6 +39,66 @@ pub fn component(props: &Props) -> Html {
                         <a class="button" style="margin:0 .5em" href={release.asset(format!("{}.avif",summit.reference.slug()).as_str()).unwrap().browser_download_url.clone()}>{"1440p AVIF"}</a>
                     </nav>
                 </section>
+                <section>
+                    <h4>{"Insights"}</h4>
+                    {{
+                        let percentage = summit.insights.polish_area / summit.insights.total_area * 100.0;
+                        if  percentage > 50.0 && summit.reference.association == "SP" {
+                            html!{
+                                <p>{format!("✔️ Over 50% ({percentage:.2}%) of the activation zone area is in Poland and summits belongs to SP.")}</p>
+                            }
+                        }
+                        else if percentage < 50.0 && summit.reference.association != "SP" {
+                            html!{
+                                <p>{format!("✔️ Less than 50% ({percentage:.2}%) of the activation zone area is in Poland and summits does not belong to SP.")}</p>
+                            }
+                        }
+                        else if  percentage > 50.0 && summit.reference.association != "SP" {
+                            html!{
+                                <p>{format!("❌ Over 50% ({percentage:.2}%) of the activation zone area is in Poland but summit does not belong to SP!")}</p>
+                            }
+                        }
+                        else if percentage < 50.0 && summit.reference.association == "SP" {
+                            html!{
+                                <p>{format!("❌ Less than 50% ({percentage:.2}%) of the activation zone area is in Poland but summit belongs to SP!")}</p>
+                            }
+                        }
+                        else {
+                            html! {<p> {"Error"} </p>}
+                        }
+                    }}
+                    {{
+                        let tolarance = 1.0;
+                        if summit.insights.elevation > tolarance {
+                            html! {
+                                <p>{format!("❌ Calculated peak altitude is greater than catalog one by ")} <mark> {format!{"{} m",summit.insights.elevation}} </mark> {"."} </p>
+                            }
+                        }
+                        else if summit.insights.elevation < -tolarance {
+                            html! {
+                                <p>{format!("❌ Calculated peak altitude is lower than catalog one by ")} <mark> {format!{"{} m",-summit.insights.elevation}} </mark> {"."} </p>
+                            }
+                        }
+                        else {
+                            html! {
+                                <p>{format!("✔️ Calculated peak altitude is OK.")} </p>
+                            }
+                        }
+                    }}
+                    {{
+                        let tolarance = 10.0;
+                        if summit.insights.distance > tolarance {
+                            html! {
+                                <p>{format!("❌ Calculated peak position differs from catalog one by ")} <mark> {format!{"{} m",summit.insights.distance}} </mark> {"."} </p>
+                            }
+                        }
+                        else {
+                            html! {
+                                <p>{format!("✔️ Calculated peak position is OK.")} </p>
+                            }
+                        }
+                    }}
+                </section>
             </article>
         },
         None => html! {{"todo"}},
