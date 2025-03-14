@@ -1,4 +1,4 @@
-"kodinspire","FullName","POTA","WWFF"
+"kodinspire","full_name","POTA","WWFF"
 # National Parks
 "PL.ZIPOP.1393.PN.5","Pieniński Park Narodowy","PL-0850","SPFF-0013"
 "PL.ZIPOP.1393.PN.6","Świętokrzyski Park Narodowy","PL-0671","SPFF-0018"
@@ -72,6 +72,7 @@
 "PL.ZIPOP.1393.RP.1151","Rezerwat przyrody Ostrzyca Proboszczowicka","PL-1792","SPFF-1831"
 "PL.ZIPOP.1393.RP.1229","Rezerwat przyrody Baniska","PL-2741",""
 "PL.ZIPOP.1393.RP.1338","Rezerwat przyrody Bukowa Kalenica w Górach Sowich","PL-1690","SPFF-0722"
+"PL.ZIPOP.1393.RP.1377","Rezerwat przyrody Zwiezło w dolinie Olchowatego",,
 "PL.ZIPOP.1393.RP.1386","Rezerwat przyrody Źródliska Jasiołki","PL-2140","SPFF-2358"
 "PL.ZIPOP.1393.RP.1608","Rezerwat przyrody Przysłup","",""
 "PL.ZIPOP.1393.RP.1646","Rezerwat przyrody Jaworzyna na Chełmie","",""

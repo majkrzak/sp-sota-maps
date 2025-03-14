@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Self, ClassVar
-from shapely import Polygon
+from shapely import Polygon, Geometry
 from geopandas import read_file
 from geopandas import GeoDataFrame
 from .helpers.cache import download, pickled
 from functools import cache
-from .data import gminas as pgas
+from .data import gminas_references
 
 __all__ = ["Gmina"]
 
@@ -32,7 +32,7 @@ class MetaGmina(type):
 
         gminas = gminas.set_index("JPT_KOD_JE", drop=False)
 
-        gminas = gminas.join(pgas)
+        gminas = gminas.join(gminas_references)
 
         gminas = gminas.set_crs("EPSG:2180")
         gminas = gminas.to_crs("EPSG:4326")
@@ -47,7 +47,7 @@ class Gmina(metaclass=MetaGmina):
     id: str
     name: str
     pga: str
-    shape: Polygon
+    shape: Geometry
 
     @classmethod
     def find(cls, shape: Polygon) -> list[Self]:
@@ -55,7 +55,9 @@ class Gmina(metaclass=MetaGmina):
         gminas.geometry = gminas.geometry.intersection(shape)
         gminas = gminas[~gminas.geometry.is_empty]
 
-        assert gminas.PGA.notna().all()
+        assert (
+            gminas.PGA.notna().all()
+        ), f"{gminas[gminas.PGA.isna()].index.values} not in gminas.csv"
 
         return [
             Gmina(
