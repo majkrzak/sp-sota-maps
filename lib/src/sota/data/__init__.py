@@ -1,10 +1,10 @@
 from pandas import read_csv
 from importlib import resources
 
-__all__ = ["parks", "gminas"]
+__all__ = ["parks_references", "gminas_references"]
 
 with (resources.files() / "parks.csv").open("rt") as f:
-    parks = read_csv(
+    parks_references = read_csv(
         f,
         comment="#",
         index_col="kodinspire",
@@ -13,7 +13,7 @@ with (resources.files() / "parks.csv").open("rt") as f:
     )
 
 with (resources.files() / "gminas.csv").open("rt") as f:
-    gminas = read_csv(
+    gminas_references = read_csv(
         f,
         comment="#",
         index_col="id",

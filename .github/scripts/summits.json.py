@@ -21,28 +21,21 @@ def serializer(obj):
             "lat": r4(obj.lat),
             "lon": r4(obj.lon),
             "alt": r2(obj.alt),
+            "catalog_lat": r4(obj.catalog_lat),
+            "catalog_lon": r4(obj.catalog_lon),
+            "catalog_alt": r2(obj.catalog_alt),
+            "catalog_alt_diff": r2(obj.alt - obj.catalog_alt),
+            "catalog_pos_diff": r2(
+                g.line_length(
+                    [r4(obj.lat), r4(obj.catalog_lat)],
+                    [r4(obj.lon), r4(obj.catalog_lon)],
+                )
+            ),
+            "hmap_symbols": obj.zone.hmap.symbols,
+            "hmap_reports": obj.zone.hmap.reports,
+            "area": r2(abs(g.geometry_area_perimeter(obj.zone.shape)[0])),
             "gminas": obj.gminas,
             "parks": obj.parks,
-            "insights": {
-                "elevation": r2(obj.alt - obj.catalog_alt),
-                "distance": r2(
-                    g.line_length(
-                        [r4(obj.lat), r4(obj.catalog_lat)],
-                        [r4(obj.lon), r4(obj.catalog_lon)],
-                    )
-                ),
-                "total_area": r2(abs(g.geometry_area_perimeter(obj.zone.shape)[0])),
-                "polish_area": sum(
-                    (
-                        r2(abs(g.geometry_area_perimeter(gmina.shape)[0]))
-                        for gmina in obj.gminas
-                    )
-                ),
-            },
-            "hmap": {
-                "symbols": obj.zone.hmap.symbols,
-                "reports": obj.zone.hmap.reports,
-            },
         }
     if isinstance(obj, Reference):
         return f"{obj}"
@@ -50,12 +43,14 @@ def serializer(obj):
         return {
             "name": obj.name,
             "pga": obj.pga,
+            "area": r2(abs(g.geometry_area_perimeter(obj.shape)[0])),
         }
     if isinstance(obj, Park):
         return {
             "name": obj.name,
             "pota": obj.pota,
             "wwff": obj.wwff,
+            "area": r2(abs(g.geometry_area_perimeter(obj.shape)[0])),
         }
     raise TypeError(f"{obj.__class__.__name__} {obj} is not JSON serializable")
 
