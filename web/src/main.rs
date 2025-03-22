@@ -1,11 +1,10 @@
-use crate::components::app::App;
-use yew::Renderer;
-
 pub mod components;
+pub mod helpers;
 pub mod model;
 pub mod router;
 pub mod views;
 
 fn main() {
-    Renderer::<App>::new().render();
+    wasm_logger::init(wasm_logger::Config::default());
+    yew::Renderer::<crate::components::app::App>::new().render();
 }
