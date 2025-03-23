@@ -3,3 +3,4 @@ pub mod park;
 pub mod reference;
 pub mod release;
 pub mod summit;
+pub mod summits;

@@ -4,7 +4,7 @@ use yew::{function_component, html, use_context, ContextProvider, Html, HtmlResu
 
 use crate::{
     helpers::catch::catch,
-    model::{release::Release, summit::Summit},
+    model::{release::Release, summits::Summits},
 };
 
 #[derive(Properties, PartialEq, Clone)]
@@ -28,13 +28,13 @@ pub fn component(props: &Props) -> HtmlResult {
 
         let json_string = String::from_utf8(decomp).context("not a UTF8 string")?;
 
-        let summits: Vec<Summit> =
+        let summits: Summits =
             serde_json::from_str(json_string.as_str()).context("not valid json")?;
 
         Ok(html! {
-            <ContextProvider<Vec<Summit>> context={summits.clone()}>
+            <ContextProvider<Summits> context={summits.clone()}>
                 { props.children.clone() }
-            </ContextProvider<Vec<Summit>>>
+            </ContextProvider<Summits>>
         })
     }))
 }

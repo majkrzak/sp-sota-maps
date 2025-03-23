@@ -6,7 +6,7 @@ use crate::{helpers::catch::catch, views::summit::summit_brief};
 #[function_component(Summits)]
 pub fn component() -> Html {
     let summits =
-        use_context::<Vec<crate::model::summit::Summit>>().context("Summits context is missing");
+        use_context::<crate::model::summits::Summits>().context("Summits context is missing");
 
     catch(|| {
         Ok(html! {
