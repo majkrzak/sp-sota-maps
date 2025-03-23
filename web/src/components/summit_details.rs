@@ -1,11 +1,10 @@
 use anyhow::Context;
 use yew::{function_component, html, use_context, Html, Properties};
-use yew_router::prelude::Link;
 
 use crate::{
     helpers::catch::catch,
     model::{reference::Reference, release::Release, summit::Summit},
-    router::Route,
+    views::summit::summit_brief,
 };
 
 #[derive(Properties, PartialEq, Clone)]
@@ -24,15 +23,7 @@ pub fn component(props: &Props) -> Html {
             match summits?.iter().find(|x| x.reference == props.reference) {
                 Some(summit) => html! {
                     <article>
-                        <h3>
-                            <Link<Route> to={Route::Summit{reference:summit.reference.clone()}}>
-                                { summit.reference.full() }
-                            </Link<Route>>
-                            { ", " }
-                            { summit.name.clone() }
-                            { " – " }
-                            { format!("{:0.0}m",summit.alt) }
-                        </h3>
+                        <h3>{ summit_brief(summit) }</h3>
                         <nav>
                             <a
                                 style="margin:0 .5em"

@@ -11,7 +11,15 @@ pub fn component() -> Html {
     catch(|| {
         Ok(html! {
             <>
-                <ul>{ summits?.iter().map(summit_brief).collect::<Html>() }</ul>
+                <ul>
+                    { summits?.iter().map(|s|{
+                    html!{
+                        <li>
+                        {summit_brief(s)}
+                        </li>
+                    }
+                }).collect::<Html>() }
+                </ul>
             </>
         })
     })
