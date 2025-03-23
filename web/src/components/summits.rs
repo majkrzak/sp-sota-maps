@@ -12,10 +12,10 @@ pub fn component() -> Html {
         Ok(html! {
             <>
                 <ul>
-                    { summits?.iter().map(|s|{
+                    { summits?.iter().map(|summit|{
                     html!{
-                        <li>
-                        {summit_brief(s)}
+                        <li key={summit.reference.slug()}>
+                        {summit_brief(summit)}
                         </li>
                     }
                 }).collect::<Html>() }
