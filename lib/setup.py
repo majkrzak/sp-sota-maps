@@ -1,7 +1,8 @@
 from setuptools import setup, Extension
-from pkgconfig import configure_extension
 
 ext = Extension("sota.render_carto", ["src/sota/render_carto.cpp"])
-configure_extension(ext, "libmapnik")
+
+ext.define_macros.extend([("HAVE_CAIRO", None)])
+ext.libraries.extend(["mapnik"])
 
 setup(ext_modules=[ext])

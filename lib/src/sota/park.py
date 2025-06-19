@@ -1,93 +1,83 @@
 from dataclasses import dataclass
 from typing import Self
-from shapely import Polygon, Point
-from owslib.wfs import WebFeatureService
-from shapely.ops import transform
-import geopandas as gpd
-from geopandas import GeoDataFrame
+from shapely import Polygon, Geometry, union_all
+from geopandas import read_file, list_layers, GeoDataFrame
 from pandas import concat
-from .bbox import Bbox
-from .helpers.transformer import transformer
-from .data import parks
+from .helpers.cache import download, pickled
+from functools import cache
+from .data import parks_references
 
 __all__ = ["Park"]
 
 
-TYPES = [
-    "GDOS:ParkiNarodowe",
-    "GDOS:ParkiKrajobrazowe",
-    "GDOS:Rezerwaty",
-    "GDOS:ObszaryChronionegoKrajobrazu",
-    "GDOS:ZespolyPrzyrodniczoKrajobrazowe",
-    "GDOS:ObszarySpecjalnejOchrony",
-    "GDOS:SpecjalneObszaryOchrony",
-    "GDOS:PomnikiPrzyrodyPowierzchniowe",
-    "GDOS:UzytkiEkologiczne",
-]
+class MetaPark(type):
+    @property
+    @cache
+    @lambda f: lambda x: pickled(f.__name__, lambda: f(x))
+    def PARKS(cls) -> GeoDataFrame:
 
-WFS = WebFeatureService(
-    url="https://sdi.gdos.gov.pl/wfs",
-    version="1.1.0",
-    # auth=Authentication(None, None, None, False),
-)
-
-
-def read_wfs(bbox):
-    response = WFS.getfeature(
-        typename=TYPES,
-        bbox=bbox.t(2180).xyxy,
-    )
-
-    data = []
-    for typ in TYPES:
-        try:
-            data.append(gpd.read_file(response, layer=typ[5:]))
-        except:
-            pass
-
-    if not len(data):
-        return GeoDataFrame(
-            {"nazwa": ["otulina"], "kodinspire": ["abs"], "geometry": [Point(0, 0)]}
+        file = download(
+            "https://sdi.gdos.gov.pl/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAME=GDOS:ParkiNarodowe,GDOS:ParkiKrajobrazowe,GDOS:Rezerwaty,GDOS:ObszaryChronionegoKrajobrazu,GDOS:ZespolyPrzyrodniczoKrajobrazowe,GDOS:ObszarySpecjalnejOchrony,GDOS:SpecjalneObszaryOchrony,GDOS:PomnikiPrzyrodyPowierzchniowe,GDOS:UzytkiEkologiczne",
+            "gdos_parks.xml",
         )
-    else:
-        return concat(data)
+
+        parks = concat(
+            [read_file(file, layer=layer) for layer in list_layers(file).name]
+        )
+
+        parks = parks[~parks.nazwa.astype("str").str.endswith("otulina")]
+
+        parks = parks[
+            [
+                "kodinspire",
+                "geometry",
+            ]
+        ]
+
+        parks = parks.set_index("kodinspire", drop=False)
+
+        parks = parks.join(parks_references)
+
+        parks = parks.set_crs("EPSG:2180")
+        parks = parks.to_crs("EPSG:4326")
+
+        return parks
 
 
 @dataclass
-class Park:
+class Park(metaclass=MetaPark):
     name: str
     pota: str
     wwff: str
+    shape: Geometry
 
     @classmethod
-    def find(self, shape: Polygon) -> list[Self]:
+    def find(cls, shape: Polygon) -> list[Self]:
+        parks = cls.PARKS.copy()
+        parks.geometry = parks.geometry.intersection(shape)
+        parks = parks[~parks.geometry.is_empty]
 
-        data = read_wfs(Bbox.new(shape, 100))
+        assert (
+            parks.full_name.notna().all()
+        ), f"{parks[parks.full_name.isna()].index.values} not in parks.csv"
 
-        data.nazwa = data.nazwa.astype("str")
-        data = data[~data.nazwa.str.endswith("otulina")]
-
-        data = data[
-            data.apply(
-                lambda x: not transform(
-                    transformer(4326, 2180).transform, shape
-                ).disjoint(x.geometry),
-                axis=1,
-            )
-        ]
-        data = data.set_index("kodinspire", drop=False)
-        data = data.join(parks, validate="one_to_one")
-
-        assert data.FullName.notna().all()
-
-        data = data.groupby(["FullName", "POTA", "WWFF"], sort=False).agg(
+        parks = parks.groupby(["full_name", "POTA", "WWFF"], sort=False).agg(
             {
-                "FullName": "first",
+                "full_name": "first",
                 "POTA": "first",
                 "WWFF": "first",
+                "geometry": union_all,
             }
         )
+
+        parks = parks[parks.full_name.ne("") & (parks.POTA.ne("") | parks.WWFF.ne(""))]
+
         return [
-            Park(row["FullName"], row["POTA"], row["WWFF"])
-            for _, row in data.iterrows()
+            Park(
+                str(park.full_name),
+                str(park.POTA),
+                str(park.WWFF),
+                park.geometry,
+            )
+            for _, park in parks.iterrows()
         ]

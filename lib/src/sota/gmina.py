@@ -1,60 +1,70 @@
 from dataclasses import dataclass
-from typing import Self
-from shapely import Polygon
-from owslib.wfs import WebFeatureService
-from shapely.ops import transform
-import geopandas as gpd
-from .bbox import Bbox
-from .helpers.transformer import transformer
-from .data import gminas
+from typing import Self, ClassVar
+from shapely import Polygon, Geometry
+from geopandas import read_file
+from geopandas import GeoDataFrame
+from .helpers.cache import download, pickled
+from functools import cache
+from .data import gminas_references
 
 __all__ = ["Gmina"]
 
-WFS = WebFeatureService(
-    url="https://mapy.geoportal.gov.pl/wss/service/PZGIK/PRG/WFS/AdministrativeBoundaries",
-    version="1.1.0",
-)
 
+class MetaGmina(type):
+    @property
+    @cache
+    @lambda f: lambda x: pickled(f.__name__, lambda: f(x))
+    def GMINAS(cls) -> GeoDataFrame:
+        gminas = read_file(
+            download(
+                "https://mapy.geoportal.gov.pl/wss/service/PZGIK/PRG/WFS/AdministrativeBoundaries?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAME=A03_Granice_gmin",
+                "A03_Granice_gmin.xml",
+            ),
+        )
 
-def read_wfs(bbox):
-    response = WFS.getfeature(
-        typename=["A03_Granice_gmin"],
-        bbox=bbox.t(2180).r().xyxy,
-    )
+        gminas = gminas[
+            [
+                "JPT_KOD_JE",
+                "JPT_NAZWA_",
+                "geometry",
+            ]
+        ]
 
-    try:
-        return gpd.read_file(response)
-    except:
-        return None
+        gminas = gminas.set_index("JPT_KOD_JE", drop=False)
+
+        gminas = gminas.join(gminas_references)
+
+        gminas = gminas.set_crs("EPSG:2180")
+        gminas = gminas.to_crs("EPSG:4326")
+
+        return gminas
 
 
 @dataclass
-class Gmina:
+class Gmina(metaclass=MetaGmina):
+    EPSG: ClassVar[int] = 4326
 
     id: str
     name: str
     pga: str
+    shape: Geometry
 
     @classmethod
     def find(cls, shape: Polygon) -> list[Self]:
+        gminas = cls.GMINAS.copy()
+        gminas.geometry = gminas.geometry.intersection(shape)
+        gminas = gminas[~gminas.geometry.is_empty]
 
-        data = read_wfs(Bbox.new(shape, 100))
-        data = data[data["WAZNY_DO"].astype(str) == "0"]
-
-        data = data[
-            data.apply(
-                lambda x: not transform(
-                    transformer(4326, 2180).transform, shape
-                ).disjoint(x.geometry),
-                axis=1,
-            )
-        ]
+        assert (
+            gminas.PGA.notna().all()
+        ), f"{gminas[gminas.PGA.isna()].index.values} not in gminas.csv"
 
         return [
             Gmina(
-                str(row["JPT_KOD_JE"]),
-                str(row["JPT_NAZWA_"]),
-                str(gminas.PGA[str(row["JPT_KOD_JE"])]),
+                str(gmina.JPT_KOD_JE),
+                str(gmina.JPT_NAZWA_),
+                str(gmina.PGA),
+                gmina.geometry,
             )
-            for _, row in data.iterrows()
+            for _, gmina in gminas.iterrows()
         ]

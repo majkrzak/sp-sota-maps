@@ -15,25 +15,6 @@ import numpy as np
 
 __all__ = ["Hmap"]
 
-YEARS = (2024, 2023, 2022, 2021, 2020, 2019, 2018)
-
-WFS = WebFeatureService(
-    "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NumerycznyModelTerenuEVRF2007/WFS/Skorowidze",
-    version="2.0.0",
-)
-
-
-def read_wfs(bbox, year):
-    response = WFS.getfeature(
-        typename=[f"gugik:SkorowidzNMT{year}"],
-        bbox=bbox.t(2180).r().xyxy,
-    )
-
-    try:
-        return gpd.read_file(response)
-    except:
-        return None
-
 
 @dataclass
 class Hmap:
@@ -48,6 +29,24 @@ class Hmap:
     @classmethod
     def find(cls, bbox: Bbox) -> Optional[Self]:
         """Find most recent height map data containing given bounding box."""
+
+        YEARS = (2024, 2023, 2022, 2021, 2020, 2019, 2018)
+
+        WFS = WebFeatureService(
+            "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NumerycznyModelTerenuEVRF2007/WFS/Skorowidze",
+            version="2.0.0",
+        )
+
+        def read_wfs(bbox, year):
+            response = WFS.getfeature(
+                typename=[f"gugik:SkorowidzNMT{year}"],
+                bbox=bbox.t(2180).r().xyxy,
+            )
+
+            try:
+                return gpd.read_file(response)
+            except:
+                return None
 
         def _build_zone(frame: GeoDataFrame) -> Optional[Self]:
             if not bbox.t(cls.EPSG).p().covered_by(union_all(frame.geometry)):
