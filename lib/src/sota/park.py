@@ -70,6 +70,8 @@ class Park(metaclass=MetaPark):
             }
         )
 
+        parks = parks[parks.full_name.ne("") & (parks.POTA.ne("") | parks.WWFF.ne(""))]
+
         return [
             Park(
                 str(park.full_name),
