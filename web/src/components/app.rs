@@ -14,10 +14,9 @@ pub fn component() -> Html {
             <HashRouter>
                 <header>
                     <nav>
-                        <Link<Route> to={Route::About}>{ "About" }</Link<Route>>
-                        <Link<Route> to={Route::Summits}>{ "Summits" }</Link<Route>>
-                        <a href="https://github.com/majkrzak/sp-sota-maps">{ "GitHub" }</a>
-                        <h1>{ "SP SOTA MAPS" }</h1>
+                        <Link<Route> to={Route::Summits}>
+                            <h1>{ "SP SOTA MAPS" }</h1>
+                        </Link<Route>>
                     </nav>
                 </header>
                 <main>
@@ -30,7 +29,13 @@ pub fn component() -> Html {
                     </Suspense>
                 </main>
                 <footer>
-                    <p>{ "SP-SOTA-MAPS © 2025 Piotr Majkrzak" }</p>
+                    <p>
+                        { "SP-SOTA-MAPS © 2025 Piotr Majkrzak" }
+                        <br />
+                        <a href="https://github.com/majkrzak/sp-sota-maps">
+                            { "github.com/majkrzak/sp-sota-maps" }
+                        </a>
+                    </p>
                 </footer>
             </HashRouter>
         </>

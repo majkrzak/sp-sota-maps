@@ -1,4 +1,3 @@
-pub mod about;
 pub mod app;
 pub mod not_found;
 pub mod release_context;
