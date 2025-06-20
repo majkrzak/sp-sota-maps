@@ -13,6 +13,7 @@ SUMMITS = $(shell \
 PDFS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.pdf)
 PNGS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.png)
 AVIFS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.avif)
+GEOJSONS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.geojson)
 
 PICKLES = \
     $(SUMMITS:%=$(SOTA_CACHE)/%.zone.pickle.xz) \
@@ -27,8 +28,9 @@ upload: \
     $(SOTA_OUTPUT)/pdf.tar \
     $(SOTA_OUTPUT)/png.tar \
     $(SOTA_OUTPUT)/avif.tar \
+    $(SOTA_OUTPUT)/geojson.tar \
     $(SOTA_OUTPUT)/cache.tar.00 $(SOTA_OUTPUT)/cache.tar.01 \
-    $(PDFS) $(PNGS) $(AVIFS)
+    $(PDFS) $(PNGS) $(AVIFS) $(GEOJSONS)
 	for f in $^; do gh release upload $(GITHUB_REF_NAME) $$f || true; done
 
 %.tar:
@@ -37,6 +39,7 @@ upload: \
 $(SOTA_OUTPUT)/pdf.tar: $(PDFS)
 $(SOTA_OUTPUT)/png.tar: $(PNGS)
 $(SOTA_OUTPUT)/avif.tar: $(AVIFS)
+$(SOTA_OUTPUT)/geojson.tar: $(GEOJSONS)
 $(SOTA_OUTPUT)/cache.tar: $(PICKLES)
 
 $(SOTA_OUTPUT)/cache.tar.00 $(SOTA_OUTPUT)/cache.tar.01: $(SOTA_OUTPUT)/cache.tar
@@ -56,3 +59,7 @@ $(PNGS): %.png: %.pdf
 
 $(AVIFS): %.avif: %.png
 	magick convert \$< \$@
+
+$(GEOJSONS): %.geojson: $(SOTA_OUTPUT)/summits.csv
+	test -f $@
+	touch $@

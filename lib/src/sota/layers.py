@@ -9,6 +9,7 @@ from .render_carto import render_carto
 from os.path import join, isfile
 from numpy.ma import masked_array
 from math import floor, ceil
+import geojson as gs
 
 OUTPUT_DIR = environ.get("SOTA_OUTPUT", "./output")
 
@@ -117,4 +118,56 @@ class CartoLayer(Layer):
         )
 
 
-LAYERS = (CartoLayer, IsolinesLayer, ZoneLayer)
+@dataclass
+class GeoJsonLayer(Layer):
+    name = "geojson"
+
+    @property
+    def path(self) -> str:
+        return join(OUTPUT_DIR, f"{self.summit.reference:slug}.geojson")
+
+    def render(self) -> None:
+        with open(self.path, "w") as f:
+            gs.dump(
+                gs.FeatureCollection(
+                    [
+                        gs.Feature(
+                            geometry=self.summit.peak,
+                            properties={
+                                "SOTA": f"{self.summit.reference}",
+                                "title": f"{self.summit.reference} – {self.summit.name}",
+                                "marker-symbol": "mountain",
+                            },
+                        ),
+                        gs.Feature(
+                            geometry=self.summit.zone.shape,
+                            properties={"description": "activation zone"},
+                        ),
+                        *(
+                            gs.Feature(
+                                geometry=gmina.shape,
+                                properties={
+                                    "PGA": f"{gmina.pga}",
+                                    "title": f"{gmina.pga} – gmina {gmina.name}",
+                                },
+                            )
+                            for gmina in self.summit.gminas
+                        ),
+                        *(
+                            gs.Feature(
+                                geometry=park.shape,
+                                properties={
+                                    "POTA": f"{park.pota}",
+                                    "WWFF": f"{park.wwff}",
+                                    "title": f"{park.pota}/{park.wwff} – {park.name}",
+                                },
+                            )
+                            for park in self.summit.parks
+                        ),
+                    ]
+                ),
+                f,
+            )
+
+
+LAYERS = (CartoLayer, IsolinesLayer, ZoneLayer, GeoJsonLayer)
