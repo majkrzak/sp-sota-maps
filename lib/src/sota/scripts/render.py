@@ -18,10 +18,12 @@ from ..view_port import ViewPort
 @command(cls=RichCommand)
 @option("-r", "--overwrite", type=bool, default=False)
 @option("-s", "--reference", type=str)
-def main(overwrite: bool, reference: Optional[str]) -> int:
+@option("-l", "--layer", type=str)
+def main(overwrite: bool, reference: Optional[str], layer: Optional[str]) -> int:
     executor = ThreadPoolExecutor(max_workers=1)
 
     summits = Summit if not reference else [Summit[Reference.from_str(reference)]]
+    layers = LAYERS if not layer else list(filter(lambda x: x.name == layer, LAYERS))
 
     with Progress(
         TextColumn("[progress.description]{task.description}"),
@@ -32,14 +34,14 @@ def main(overwrite: bool, reference: Optional[str]) -> int:
             Layer.name: progress.add_task(
                 f"Rendering {Layer.name} layer", total=len(summits)
             )
-            for Layer in LAYERS
+            for Layer in layers
         }
 
         for summit in summits:
 
             view_port = ViewPort.a5paper(summit)
 
-            for Layer in LAYERS:
+            for Layer in layers:
 
                 def task(layer):
                     if overwrite or not layer.exists:
