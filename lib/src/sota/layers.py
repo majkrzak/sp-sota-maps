@@ -9,6 +9,10 @@ from .render_carto import render_carto
 from os.path import join, isfile
 from numpy.ma import masked_array
 from math import floor, ceil
+from jinja2 import Environment, PackageLoader
+from . import __version__
+from datetime import datetime
+
 import geojson as gs
 
 OUTPUT_DIR = environ.get("SOTA_OUTPUT", "./output")
@@ -119,6 +123,39 @@ class CartoLayer(Layer):
 
 
 @dataclass
+class TexLayer(Layer):
+    name = "tex"
+
+    @property
+    def path(self) -> str:
+        return join(OUTPUT_DIR, f"{self.summit.reference:slug}.tex")
+
+    def render(self) -> None:
+        env = Environment(
+            variable_start_string="<",
+            variable_end_string=">",
+            loader=PackageLoader("sota", "templates"),
+        )
+        env.filters["slug"] = lambda value: f"{value:slug}"
+        env.filters["full"] = lambda value: f"{value:full}"
+
+        vp = ViewPort.a5paper(self.summit)
+        tpl = env.get_template("map.tex")
+
+        with open(self.path, "w") as f:
+            f.write(
+                tpl.render(
+                    slug=f"{self.summit.reference:slug}",
+                    summit=self.summit,
+                    view_port=vp,
+                    layers=["osm", "isolines", "zone"],
+                    version=__version__,
+                    date=datetime.today().strftime("%Y-%m-%d"),
+                )
+            )
+
+
+@dataclass
 class GeoJsonLayer(Layer):
     name = "geojson"
 
@@ -170,4 +207,4 @@ class GeoJsonLayer(Layer):
             )
 
 
-LAYERS = (CartoLayer, IsolinesLayer, ZoneLayer, GeoJsonLayer)
+LAYERS = (CartoLayer, IsolinesLayer, ZoneLayer, TexLayer, GeoJsonLayer)
