@@ -4,11 +4,7 @@ SOTA_CACHE ?= ./cache
 SOTA_OUTPUT ?= ./output
 GITHUB_REF_NAME ?= $(shell git describe --tags `git rev-list --tags --max-count=1`)
 
-SUMMITS = $(shell \
-    cat ${SOTA_OUTPUT}/summits.csv |\
-    tail -n +2 |\
-    awk 'BEGIN { FS = ","; ORS = " " } NF { gsub(/[/-]/,""); print $$1 }' ;\
-)
+SUMMITS = $(shell .github/scripts/list-slugs.py)
 
 PICKLES = \
     $(SUMMITS:%=$(SOTA_CACHE)/%.zone.pickle.xz) \
@@ -30,6 +26,6 @@ $(SOTA_OUTPUT)/cache.tar: $(PICKLES)
 $(SOTA_OUTPUT)/cache.tar.00 $(SOTA_OUTPUT)/cache.tar.01: $(SOTA_OUTPUT)/cache.tar
 	split -n2 -x $< $<.
 
-$(PICKLES): %.pickle.xz: $(SOTA_OUTPUT)/summits.csv
+$(PICKLES): %.pickle.xz:
 	test -f $@
 	touch $@

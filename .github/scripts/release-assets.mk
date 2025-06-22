@@ -1,13 +1,10 @@
 #!/usr/bin/env -S make -f
 
+SOTA_CACHE ?= ./cache
 SOTA_OUTPUT ?= ./output
 GITHUB_REF_NAME ?= $(shell git describe --tags `git rev-list --tags --max-count=1`)
 
-SUMMITS = $(shell \
-    cat ${SOTA_OUTPUT}/summits.csv |\
-    tail -n +2 |\
-    awk 'BEGIN { FS = ","; ORS = " " } NF { gsub(/[/-]/,""); print $$1 }' ;\
-)
+SUMMITS = $(shell .github/scripts/list-slugs.py)
 
 PDFS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.pdf)
 PNGS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.png)
@@ -17,7 +14,6 @@ GEOJSONS = $(SUMMITS:%=$(SOTA_OUTPUT)/%.geojson)
 
 .PHONY = upload
 upload: \
-    $(SOTA_OUTPUT)/summits.csv \
     $(SOTA_OUTPUT)/pdf.tar \
     $(SOTA_OUTPUT)/png.tar \
     $(SOTA_OUTPUT)/avif.tar \
@@ -33,9 +29,8 @@ $(SOTA_OUTPUT)/png.tar: $(PNGS)
 $(SOTA_OUTPUT)/avif.tar: $(AVIFS)
 $(SOTA_OUTPUT)/geojson.tar: $(GEOJSONS)
 
-$(PDFS): %.pdf: $(SOTA_OUTPUT)/summits.csv
-	test -f $@
-	touch $@
+$(PDFS): %.pdf: %.tex %.zone.pdf %.isolines.pdf %.osm.pdf
+	latexmk -lualatex -output-directory=$(SOTA_OUTPUT) $<
 
 $(PNGS): %.png: %.pdf
 	magick convert -density 512 -resize x1440 \$< -flatten \$@
@@ -44,6 +39,6 @@ $(PNGS): %.png: %.pdf
 $(AVIFS): %.avif: %.png
 	magick convert \$< \$@
 
-$(GEOJSONS): %.geojson: $(SOTA_OUTPUT)/summits.csv
+$(GEOJSONS): %.geojson:
 	test -f $@
 	touch $@
