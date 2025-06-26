@@ -23,6 +23,9 @@ dependencies = [
     "geojson",
 ]
 
+[project.scripts]
+sota = "sota.__main__:main"
+
 [build-system]
 requires = ["setuptools >= 61.0", "setuptools-scm", "setuptools-git-versioning>=2.0", "pkgconfig"]
 build-backend = "setuptools.build_meta"

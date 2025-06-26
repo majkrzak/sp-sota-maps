@@ -3,8 +3,7 @@ SP SOTA MAPS
 
 ![example](example.png)
 
-Aim of the project is to prepare a set of SOTA activation cheatsheet maps congaing the activation zone and other useful
-features, like grid square reference or nearby references from other programs.
+Aim of the project is to prepare a set of SOTA activation cheat sheet maps containing the activation zone and other useful features, like grid square reference or nearby references from other programs.
 
 Due to the data sources used, the coverage of the project is limited to SP region and neighbours border summits.
 
@@ -18,9 +17,11 @@ Python helper library
 pip install --user --break-system-packages --verbose ./lib
 ```
 
-### Baking the cache
+This will install `sota` python module, together with a `sota` helper executable.
 
-Filesystem cache is used by the library to reduce heavy repetitive calculations and load on the data servers.
+### Baking or preloading the cache
+
+File system cache is used by the library to reduce heavy repetitive calculations and load on the data servers.
 Cache directory is specified by the `SOTA_CACHE` environment variable and defaults to `./cache`.
 
 Baking process is recommended if all or bigger amount of summits will be processed.
@@ -29,30 +30,42 @@ In case of processing only one summit, it is enough to relay on the on demand ca
 To run the baking, execute the following:
 
 ```sh
-python -m sota.scripts.bake_cache
+sota cache bake
 ```
 
-### Rendering map layers
+Alternatively, cache can be preloaded from the GitHub release by executing the following:
 
-All maps layers will be plotted and saved as PDF files.
+```
+sota cache preload
+```
+
+> [!CAUTION]
+> Cache uses `pickle` as a storage format, which allows arbitrary code execution during unpickling.
+> Ensure you trust me and the GitHub.
+
+### Rendering map layers and other files
+
+All maps layers will be plotted and saved as PDF files. Besides that, TEX and other files will be generated.
 Output directory is specified by the `SOTA_OUTPUT` environment variable and defaults to `./output`.
 
-Additionally, OpenStreetMap Carto have to be prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
+Additionally, OpenStreetMap Carto have to be present in `../openstreetmap-carto/` and  prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
 Poland OSM data is required: https://download.geofabrik.de/europe/poland-latest.osm.pbf
 
-To run the map plotting process, execute the following:
+To run the rendering process, execute the following:
 
 ```sh
-python -m sota.scripts.render
+sota render
 ```
 
 ### Typeset the result
 
-Final result will be typesetted using `lualatex` into the PDF files.
+Final typesetting have to be done with `lualatex`.
+Recommended way is to do it is with `latexmk`. This ensures files are generated correctly.
+
 Output directory is specified by the `SOTA_OUTPUT` environment variable and defaults to `./output`.
 
 To run the final typesetting, execute the following:
 
 ```sh
-python -m sota.scripts.render_tex
+latexmk -lualatex -output-directory=$SOTA_OUTPUT $SOTA_OUTPUT/*.tex
 ```

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from os import environ
 from .summit import Summit
 from .view_port import ViewPort
 from matplotlib.pyplot import Figure, Axes
@@ -10,12 +9,10 @@ from os.path import join, isfile
 from numpy.ma import masked_array
 from math import floor, ceil
 from jinja2 import Environment, PackageLoader
-from . import __version__
+from . import __version__, OUTPUT_DIR
 from datetime import datetime
 
 import geojson as gs
-
-OUTPUT_DIR = environ.get("SOTA_OUTPUT", "./output")
 
 
 @dataclass
@@ -139,7 +136,6 @@ class TexLayer(Layer):
         env.filters["slug"] = lambda value: f"{value:slug}"
         env.filters["full"] = lambda value: f"{value:full}"
 
-        vp = ViewPort.a5paper(self.summit)
         tpl = env.get_template("map.tex")
 
         with open(self.path, "w") as f:
@@ -147,7 +143,7 @@ class TexLayer(Layer):
                 tpl.render(
                     slug=f"{self.summit.reference:slug}",
                     summit=self.summit,
-                    view_port=vp,
+                    view_port=self.view_port,
                     layers=["osm", "isolines", "zone"],
                     version=__version__,
                     date=datetime.today().strftime("%Y-%m-%d"),

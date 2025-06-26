@@ -16,11 +16,7 @@ from numpy import array, unravel_index, round
 from numpy.ma import masked_array
 from math import inf
 from rasterio.features import rasterize
-
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
+from . import LOGGER
 
 __all__ = ["Zone"]
 
@@ -43,11 +39,11 @@ class Zone:
         """
 
         def _hmap(zone: Polygon | Point) -> Optional[Hmap]:
-            logger.info("Generating hmap for zone")
+            LOGGER.info("Generating hmap for zone")
             return Hmap.find(Bbox.new(zone, REGION_MARGIN))
 
         def _zone(peak: Point, hmap: Hmap) -> Optional[Polygon]:
-            logger.info(f"Generating zone for: {peak}")
+            LOGGER.info(f"Generating zone for: {peak}")
 
             def to_xy(p):
                 return array(
@@ -83,7 +79,7 @@ class Zone:
             return transform(region, from_xy)
 
         def _peak(zone: Polygon, hmap: Hmap) -> Point:
-            logger.info("Searching peak in zone")
+            LOGGER.info("Searching peak in zone")
 
             def to_xy(p):
                 return array(
@@ -115,17 +111,17 @@ class Zone:
 
             hmap = _hmap(zone)
             if hmap is None:
-                logger.error("Hmap not found!")
+                LOGGER.error("Hmap not found!")
                 return
 
             new_zone = _zone(peak, hmap)
             if new_zone is None:
-                logger.error("Zone not found!")
+                LOGGER.error("Zone not found!")
                 return
 
             new_peak = _peak(new_zone, hmap)
             if new_peak is None:
-                logger.error("Peak not found!")
+                LOGGER.error("Peak not found!")
                 return
 
             if new_peak != peak or new_zone != zone:

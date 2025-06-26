@@ -1,11 +1,9 @@
-from os import environ
 from os.path import isfile, basename, join
 from urllib.parse import urlparse
 from requests import get
 from pickle import load, dump
 from lzma import open
-
-CACHE_DIR = environ.get("SOTA_CACHE", "./cache")
+from .. import CACHE_DIR
 
 
 def download(url, name=None):
