@@ -36,7 +36,7 @@ sota cache bake
 
 Alternatively, the cache can be preloaded from the GitHub release by executing the following:
 
-```text
+```sh
 sota cache preload
 ```
 
