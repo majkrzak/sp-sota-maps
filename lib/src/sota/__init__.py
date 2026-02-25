@@ -1,6 +1,6 @@
-from importlib.metadata import version, PackageNotFoundError
-from os import environ
+from importlib.metadata import PackageNotFoundError, version
 from logging import getLogger
+from os import environ
 
 try:
     __version__ = version("sp-sota-maps")

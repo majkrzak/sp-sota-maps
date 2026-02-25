@@ -1,15 +1,16 @@
-from logging import basicConfig, DEBUG, ERROR, INFO
-from click import group, option
 from concurrent.futures import ThreadPoolExecutor
-from rich.logging import RichHandler
-from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
-from rich_click import RichCommand, RichGroup
+from logging import DEBUG, ERROR, INFO, basicConfig
 from typing import Optional
-from .summit import Summit
-from .reference import Reference
-from .layers import LAYERS
-from .view_port import ViewPort
 
+from click import group, option
+from rich.logging import RichHandler
+from rich.progress import BarColumn, Progress, TaskProgressColumn, TextColumn
+from rich_click import RichCommand, RichGroup
+
+from .layers import LAYERS
+from .reference import Reference
+from .summit import Summit
+from .view_port import ViewPort
 
 progress = Progress(
     TextColumn("[progress.description]{task.description}"),

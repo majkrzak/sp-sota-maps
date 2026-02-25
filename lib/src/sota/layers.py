@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime
+from math import ceil, floor
+from os.path import isfile, join
+
+import cartopy.crs as ccrs
+import geojson as gs
+from jinja2 import Environment, PackageLoader
+from matplotlib.pyplot import Axes, Figure
+from numpy.ma import masked_array
+
+from . import OUTPUT_DIR, __version__
+from .render_carto import render_carto
 from .summit import Summit
 from .view_port import ViewPort
-from matplotlib.pyplot import Figure, Axes
-import cartopy.crs as ccrs
-from .render_carto import render_carto
-from os.path import join, isfile
-from numpy.ma import masked_array
-from math import floor, ceil
-from jinja2 import Environment, PackageLoader
-from . import __version__, OUTPUT_DIR
-from datetime import datetime
-
-import geojson as gs
 
 
 @dataclass

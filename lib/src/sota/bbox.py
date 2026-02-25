@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from math import ceil, floor
+from typing import Self
 
 from pyproj import Geod
-from typing import Self
-from math import floor, ceil
-from shapely import box, Polygon
+from shapely import Polygon, box
 from shapely.geometry.base import BaseGeometry
+
 from .helpers.transformer import transformer
 
 __all__ = ["Bbox"]

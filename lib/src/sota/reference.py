@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Self, ClassVar
-from re import fullmatch, Pattern, compile
-
+from re import Pattern, compile, fullmatch
+from typing import ClassVar, Self
 
 __all__ = ["Reference"]
 

@@ -1,5 +1,6 @@
-from pandas import read_csv
 from importlib import resources
+
+from pandas import read_csv
 
 __all__ = ["parks_references", "gminas_references"]
 

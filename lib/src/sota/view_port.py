@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from math import ceil, floor
 from typing import Self
-from math import floor, ceil
 
 from .bbox import Bbox
 from .summit import Summit

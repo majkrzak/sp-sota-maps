@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 
 ext = Extension("sota.render_carto", ["src/sota/render_carto.cpp"])
 

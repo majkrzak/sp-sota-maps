@@ -1,8 +1,10 @@
-from os.path import isfile, basename, join
-from urllib.parse import urlparse
-from requests import get
-from pickle import load, dump
 from lzma import open
+from os.path import basename, isfile, join
+from pickle import dump, load
+from urllib.parse import urlparse
+
+from requests import get
+
 from .. import CACHE_DIR
 
 

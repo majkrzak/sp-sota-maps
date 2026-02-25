@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+from functools import partial
+from json import dump
 from sys import exit, stdout
-from sota.summit import Summit
-from sota.reference import Reference
+
+from pyproj import Geod
 from sota.gmina import Gmina
 from sota.park import Park
-from json import dump
-from pyproj import Geod
-from functools import partial
+from sota.reference import Reference
+from sota.summit import Summit
 
 
 def serializer(obj):

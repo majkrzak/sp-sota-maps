@@ -1,4 +1,5 @@
-SP SOTA MAPS
+# SP SOTA MAPS
+
 ============
 
 ![example](example.png)
@@ -7,8 +8,8 @@ The aim of the project is to prepare a set of SOTA activation cheat sheet maps c
 
 Due to the data sources used, the coverage of the project is limited to SP region and neighbours border summits.
 
+## Python helper library
 
-Python helper library
 ---------------------
 
 ### Installation
@@ -35,7 +36,7 @@ sota cache bake
 
 Alternatively, the cache can be preloaded from the GitHub release by executing the following:
 
-```
+```text
 sota cache preload
 ```
 
@@ -48,8 +49,8 @@ sota cache preload
 All map layers will be plotted and saved as PDF files. Besides that, TEX and other files will be generated.
 The output directory is specified by the `SOTA_OUTPUT` environment variable and defaults to `./output`.
 
-Additionally, OpenStreetMap Carto has to be present in `../openstreetmap-carto/` and  prepared according to: https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md
-Poland OSM data is required: https://download.geofabrik.de/europe/poland-latest.osm.pbf
+Additionally, OpenStreetMap Carto has to be present in `../openstreetmap-carto/` and prepared according to: <https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md>
+Poland OSM data is required: <https://download.geofabrik.de/europe/poland-latest.osm.pbf>
 
 To run the rendering process, execute the following:
 

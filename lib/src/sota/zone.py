@@ -1,22 +1,18 @@
 from dataclasses import dataclass
-from typing import Self, Optional, ClassVar
-from .hmap import Hmap
+from math import inf
+from typing import ClassVar, Optional, Self
+
+from contourpy import contour_generator
+from numpy import array, round, unravel_index
+from numpy.ma import masked_array
+from rasterio.features import rasterize
+from shapely import (GeometryType, Point, Polygon, distance, from_ragged_array,
+                     transform)
+
+from . import LOGGER
 from .bbox import Bbox
 from .helpers.transformer import transformer
-from shapely import (
-    Polygon,
-    Point,
-    transform,
-    distance,
-    from_ragged_array,
-    GeometryType,
-)
-from contourpy import contour_generator
-from numpy import array, unravel_index, round
-from numpy.ma import masked_array
-from math import inf
-from rasterio.features import rasterize
-from . import LOGGER
+from .hmap import Hmap
 
 __all__ = ["Zone"]
 

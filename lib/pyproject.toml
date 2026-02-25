@@ -1,33 +1,36 @@
 [project]
 dynamic = ["version"]
 name = "sp-sota-maps"
-authors = [
-    { name = "Piotr Majkrzak", email = "piotr@majkrzak.dev" },
-]
+authors = [{ name = "Piotr Majkrzak", email = "piotr@majkrzak.dev" }]
 dependencies = [
-    "owslib",
-    "pyproj",
-    "geopandas",
-    "pandas",
-    "numpy",
-    "shapely",
-    "requests",
-    "rasterio",
-    "affine",
-    "contourpy",
-    "rich",
-    "cartopy",
-    "jinja2",
-    "click",
-    "rich-click",
-    "geojson",
+  "owslib",
+  "pyproj",
+  "geopandas",
+  "pandas",
+  "numpy",
+  "shapely",
+  "requests",
+  "rasterio",
+  "affine",
+  "contourpy",
+  "rich",
+  "cartopy",
+  "jinja2",
+  "click",
+  "rich-click",
+  "geojson",
 ]
 
 [project.scripts]
 sota = "sota.__main__:main"
 
 [build-system]
-requires = ["setuptools >= 61.0", "setuptools-scm", "setuptools-git-versioning>=2.0", "pkgconfig"]
+requires = [
+  "setuptools >= 61.0",
+  "setuptools-scm",
+  "setuptools-git-versioning>=2.0",
+  "pkgconfig",
+]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools-git-versioning]

@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from typing import Self, ClassVar
-from shapely import Polygon, Geometry
-from geopandas import read_file
-from geopandas import GeoDataFrame
-from .helpers.cache import download, pickled
 from functools import cache
+from typing import ClassVar, Self
+
+from geopandas import GeoDataFrame, read_file
+from shapely import Geometry, Polygon
+
 from .data import gminas_references
+from .helpers.cache import download, pickled
 
 __all__ = ["Gmina"]
 

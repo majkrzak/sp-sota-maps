@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-from typing import Self, Optional, ClassVar
+from typing import ClassVar, Optional, Self
 
-from geopandas import GeoDataFrame
-
-from .bbox import Bbox
-from owslib.wfs import WebFeatureService
-from shapely import union_all
-from .helpers.cache import download
 import geopandas as gpd
+import numpy as np
+from affine import Affine
+from geopandas import GeoDataFrame
+from owslib.wfs import WebFeatureService
 from rasterio import open as rio_open
 from rasterio.merge import merge as rio_merge
-from affine import Affine
-import numpy as np
+from shapely import union_all
+
+from .bbox import Bbox
+from .helpers.cache import download
 
 __all__ = ["Hmap"]
 
