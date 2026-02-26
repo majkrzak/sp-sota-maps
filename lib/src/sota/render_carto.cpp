@@ -39,8 +39,7 @@ static struct PyModuleDef render_carto_module = {
 
 PyMODINIT_FUNC PyInit_render_carto(void) {
 
-  mapnik::datasource_cache::instance().register_datasources(
-      "/usr/lib/mapnik/input/");
+  mapnik::datasource_cache::instance().register_datasources(MAPNIK_PLUGINDIR);
 
   return PyModule_Create(&render_carto_module);
 }
