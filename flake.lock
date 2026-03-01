@@ -20,11 +20,11 @@
     },
     "import-tree": {
       "locked": {
-        "lastModified": 1771045967,
-        "narHash": "sha256-oYO4poyw0Sb/db2PigqugMlDwsvwLg6CSpFrMUWxA3Q=",
+        "lastModified": 1772344373,
+        "narHash": "sha256-OQQ1MhB9t1J71b2wxRRTdH/Qd8UGG0p+dGspfCf5U1c=",
         "owner": "vic",
         "repo": "import-tree",
-        "rev": "c968d3b54d12cf5d9c13f16f7c545a06c9d1fde6",
+        "rev": "10fda59eee7d7970ec443b925f32a1bc7526648c",
         "type": "github"
       },
       "original": {
@@ -35,16 +35,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771848320,
-        "narHash": "sha256-0MAd+0mun3K/Ns8JATeHT1sX28faLII5hVLq0L3BdZU=",
+        "lastModified": 1772047000,
+        "narHash": "sha256-7DaQVv4R97cii/Qdfy4tmDZMB2xxtyIvNGSwXBBhSmo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "2fc6539b481e1d2569f25f8799236694180c0993",
+        "rev": "1267bb4920d0fc06ea916734c11b0bf004bbe17e",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-unstable",
+        "ref": "nixos-25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -62,6 +62,34 @@
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
         "type": "github"
+      }
+    },
+    "openstreetmap-carto": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771759609,
+        "narHash": "sha256-UMwyeeNWHwTayRjxyMln0LK76zzsNit2PLTSsoCRKR0=",
+        "owner": "openstreetmap-carto",
+        "repo": "openstreetmap-carto",
+        "rev": "663cc9939c513c04c5b148ff23205824582fffa4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openstreetmap-carto",
+        "repo": "openstreetmap-carto",
+        "type": "github"
+      }
+    },
+    "poland-osm-pbf": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-KaFDOKYKAnwMkgtvZnA+L/M2gTbiFSWKB43ev+8oncM=",
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/poland-260101.osm.pbf"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/poland-260101.osm.pbf"
       }
     },
     "pyproject-nix": {
@@ -89,6 +117,8 @@
         "flake-parts": "flake-parts",
         "import-tree": "import-tree",
         "nixpkgs": "nixpkgs",
+        "openstreetmap-carto": "openstreetmap-carto",
+        "poland-osm-pbf": "poland-osm-pbf",
         "pyproject-nix": "pyproject-nix",
         "treefmt-nix": "treefmt-nix"
       }
