@@ -6,7 +6,7 @@ let
 in
 {
   perSystem =
-    { pkgs, ... }:
+    { pkgs, self', ... }:
     let
       python = pkgs.python3;
     in
@@ -22,6 +22,7 @@ in
             mapnik.buildInputs
           ];
           nativeBuildInputs = with pkgs; [ pkg-config ];
+          carto_dir = "${self'.packages.carto}";
         }
       );
     };

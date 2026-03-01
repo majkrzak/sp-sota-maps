@@ -27,3 +27,6 @@ sota = "sota.__main__:main"
 [build-system]
 requires = ["setuptools >= 61.0", "pkgconfig"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
