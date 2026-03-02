@@ -22,7 +22,7 @@ in
             mapnik.buildInputs
           ];
           nativeBuildInputs = with pkgs; [ pkg-config ];
-          carto_dir = "${self'.packages.carto}";
+          carto_dir = "${self'.packages.carto-data}";
         }
       );
     };
