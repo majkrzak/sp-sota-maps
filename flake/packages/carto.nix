@@ -3,17 +3,26 @@
   perSystem =
     { pkgs, self', ... }:
     {
-      packages.carto-start = pkgs.writeShellApplication {
-        name = "carto-start";
-        runtimeInputs = with pkgs; [
-          (postgresql.withPackages (p: with p; [ postgis ]))
-        ];
-        text = ''
-          cp -r "${self'.packages.carto-data}" "''${PGDATA:?}"
-          chmod -R u=rwX,og-rwx "''${PGDATA:?}"
-          pg_ctl -o "-c listen_addresses= -c unix_socket_directories=''${PGHOST:?}" start
-        '';
-      };
+      # nix build .#carto-service; systemctl link --user (readlink result); systemctl start --user (basename (readlink result)) --verbose
+      packages.carto-service = pkgs.writeText "carto.service" ''
+        [Unit]
+        [Service]
+        RuntimeDirectory=%n
+        PrivateMounts=true
+        PrivateTmp=disconnected
+        ProtectSystem=strict
+        BindReadOnlyPaths=/nix/store
+        AmbientCapabilities=CAP_SYS_ADMIN
+        ExecStart=${pkgs.writeShellScript "carto-start" ''
+          set -e
+          cp -R "${self'.packages.carto-data}" /tmp/pgdata
+          chmod -R u=rwX,og= /tmp/pgdata
+          ${lib.getExe' (pkgs.postgresql.withPackages (p: with p; [ postgis ])) "postgres"} \
+           -c listen_addresses= \
+           -c unix_socket_directories="''${RUNTIME_DIRECTORY:?}"  \
+           -D "/tmp/pgdata"
+        ''}
+      '';
       packages.carto-style = pkgs.stdenv.mkDerivation {
         name = "openstreetmap-carto-style";
         src = inputs.openstreetmap-carto;
@@ -51,10 +60,10 @@
           pg_ctl -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" start
           createdb
           psql -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
-          osm2pgsql \
-            --output flex \
-            --style openstreetmap-carto-flex.lua \
-            --input-reader=pbf "${inputs.poland-osm-pbf}"
+          # osm2pgsql \
+          #   --output flex \
+          #   --style openstreetmap-carto-flex.lua \
+          #   --input-reader=pbf "${inputs.poland-osm-pbf}"
           psql -f indexes.sql
           psql -f functions.sql
           psql -f common-values.sql
