@@ -1,10 +1,18 @@
 #include <Python.h>
 
+#include <filesystem>
+#include <mutex>
+#include <stdlib.h>
+
+#include <sdbus-c++/sdbus-c++.h>
+
 #include <mapnik/cairo_io.hpp>
 #include <mapnik/datasource_cache.hpp>
 #include <mapnik/geometry/box2d.hpp>
 #include <mapnik/load_map.hpp>
 #include <mapnik/map.hpp>
+
+std::once_flag init;
 
 PyObject *render_carto(PyObject *self, PyObject *args) {
   int width;
@@ -12,6 +20,35 @@ PyObject *render_carto(PyObject *self, PyObject *args) {
   char *epsg;
   double xl, yl, xh, yh;
   char *file;
+
+  std::call_once(init, []() {
+    mapnik::datasource_cache::instance().register_datasources(MAPNIK_PLUGINDIR);
+
+    auto connection = sdbus::createSessionBusConnection();
+    auto systemd = sdbus::createProxy(
+        *connection, sdbus::ServiceName{"org.freedesktop.systemd1"},
+        sdbus::ObjectPath{"/org/freedesktop/systemd1"});
+    {
+      auto method = systemd->createMethodCall(
+          sdbus::InterfaceName{"org.freedesktop.systemd1.Manager"},
+          sdbus::MethodName{"LinkUnitFiles"});
+      method << std::array{CARTO_SERVICE} << true << false;
+      systemd->callMethod(method);
+    }
+    {
+      auto method = systemd->createMethodCall(
+          sdbus::InterfaceName{"org.freedesktop.systemd1.Manager"},
+          sdbus::MethodName{"StartUnit"});
+      method << std::filesystem::path{CARTO_SERVICE}.filename() << "replace";
+      systemd->callMethod(method);
+    }
+
+    setenv("PGHOST",
+           (std::filesystem::path{getenv("XDG_RUNTIME_DIR")} /
+            std::filesystem::path{CARTO_SERVICE}.filename())
+               .c_str(),
+           true);
+  });
 
   if (!PyArg_ParseTuple(args, "iisdddds", &width, &height, &epsg, &xl, &yl, &xh,
                         &yh, &file))
@@ -37,8 +74,5 @@ static struct PyModuleDef render_carto_module = {
 };
 
 PyMODINIT_FUNC PyInit_render_carto(void) {
-
-  mapnik::datasource_cache::instance().register_datasources(MAPNIK_PLUGINDIR);
-
   return PyModule_Create(&render_carto_module);
 }
