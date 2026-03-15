@@ -4,8 +4,6 @@
 #include <mutex>
 #include <stdlib.h>
 
-#include <sdbus-c++/sdbus-c++.h>
-
 #include <mapnik/cairo_io.hpp>
 #include <mapnik/datasource_cache.hpp>
 #include <mapnik/geometry/box2d.hpp>
@@ -23,31 +21,6 @@ PyObject *render_carto(PyObject *self, PyObject *args) {
 
   std::call_once(init, []() {
     mapnik::datasource_cache::instance().register_datasources(MAPNIK_PLUGINDIR);
-
-    auto connection = sdbus::createSessionBusConnection();
-    auto systemd = sdbus::createProxy(
-        *connection, sdbus::ServiceName{"org.freedesktop.systemd1"},
-        sdbus::ObjectPath{"/org/freedesktop/systemd1"});
-    {
-      auto method = systemd->createMethodCall(
-          sdbus::InterfaceName{"org.freedesktop.systemd1.Manager"},
-          sdbus::MethodName{"LinkUnitFiles"});
-      method << std::array{CARTO_SERVICE} << true << false;
-      systemd->callMethod(method);
-    }
-    {
-      auto method = systemd->createMethodCall(
-          sdbus::InterfaceName{"org.freedesktop.systemd1.Manager"},
-          sdbus::MethodName{"StartUnit"});
-      method << std::filesystem::path{CARTO_SERVICE}.filename() << "replace";
-      systemd->callMethod(method);
-    }
-
-    setenv("PGHOST",
-           (std::filesystem::path{getenv("XDG_RUNTIME_DIR")} /
-            std::filesystem::path{CARTO_SERVICE}.filename())
-               .c_str(),
-           true);
   });
 
   if (!PyArg_ParseTuple(args, "iisdddds", &width, &height, &epsg, &xl, &yl, &xh,
@@ -56,7 +29,8 @@ PyObject *render_carto(PyObject *self, PyObject *args) {
 
   mapnik::Map map(width, height);
 
-  mapnik::load_map(map, CARTO_DIR "/carto.xml", false, CARTO_DIR);
+  auto carto_dir = std::filesystem::path{getenv("CARTO_DIR")};
+  mapnik::load_map(map, carto_dir / "carto.xml", false, carto_dir);
   map.set_srs(epsg);
   map.zoom_to_box(mapnik::box2d<double>(xl, yl, xh, yh));
   mapnik::save_to_cairo_file(map, file);

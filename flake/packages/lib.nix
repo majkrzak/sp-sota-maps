@@ -11,7 +11,7 @@ let
 in
 {
   perSystem =
-    { pkgs, ... }:
+    { pkgs, self', ... }:
     let
       python = pkgs.python3;
       postgres = with pkgs; postgresql.withPackages (p: with p; [ postgis ]);
@@ -87,9 +87,10 @@ in
            -D "/tmp/pgdata"
         ''}
       '';
+      carto-service-name = lib.baseNameOf carto-service;
     in
     {
-      packages.lib = python.pkgs.buildPythonPackage (
+      packages.sota-unwrapped = python.pkgs.buildPythonPackage (
         (project.renderers.buildPythonPackage {
           inherit python;
         })
@@ -98,13 +99,30 @@ in
           buildInputs = with pkgs; [
             mapnik
             mapnik.buildInputs
-            sdbus-cpp_2
-            sdbus-cpp_2.buildInputs
           ];
           nativeBuildInputs = with pkgs; [ pkg-config ];
-          carto_dir = "${carto-style}";
-          carto_service = "${carto-service}";
         }
       );
+      packages.sota = pkgs.buildEnv {
+        name = "sota-${version}";
+        nativeBuildInputs = with pkgs; [ makeWrapper ];
+        paths = with self'.packages; [
+          sota-unwrapped
+        ];
+        pathsToLink = [
+          "/"
+          "/bin"
+        ];
+        postBuild = ''
+          for i in $out/bin/*; do
+            wrapProgram "$i" \
+              --run 'systemctl --user link ${carto-service}' \
+              --run 'systemctl --user start ${carto-service-name}' \
+              --run 'export PGHOST="$XDG_RUNTIME_DIR/${carto-service-name}"' \
+              --set CARTO_DIR ${carto-style}
+          done
+        '';
+        meta = self'.packages.sota-unwrapped;
+      };
     };
 }
