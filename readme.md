@@ -1,24 +1,24 @@
 # SP SOTA MAPS
 
-============
-
 ![example](example.png)
 
 The aim of the project is to prepare a set of SOTA activation cheat sheet maps containing an activation zone and other useful features, like grid square references or nearby references from other programs.
 
 Due to the data sources used, the coverage of the project is limited to SP region and neighbours border summits.
 
-## Python helper library
+## Python helper utility
 
----------------------
+### Setup
 
-### Installation
+The recommended way of getting the `sota` helper utility into the scope, together with all its dependencies, is via the [`nix shell`](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-env-shell.html) command.
 
-```sh
-pip install --user --break-system-packages --verbose ./lib
+```shell
+nix shell github:majkrzak/sp-sota-maps#sota
 ```
 
-This will install the `sota` Python module, together with the `sota` helper executable.
+> [!NOTE]
+> Due to the OpenStreetMap data dependencies and its size, the build process can take up to 2 hours and result in about 20 GiB of disk space consumed.
+> If base map rendering is not required, the `sota-unwrapped` package can be used instead of `sota`.
 
 ### Baking or preloading the cache
 
@@ -30,13 +30,13 @@ In case of processing only one summit, it is enough to relay on the on demand ca
 
 To run the baking, execute the following:
 
-```sh
+```shell
 sota cache bake
 ```
 
 Alternatively, the cache can be preloaded from the GitHub release by executing the following:
 
-```sh
+```shell
 sota cache preload
 ```
 
@@ -49,12 +49,16 @@ sota cache preload
 All map layers will be plotted and saved as PDF files. Besides that, TEX and other files will be generated.
 The output directory is specified by the `SOTA_OUTPUT` environment variable and defaults to `./output`.
 
-Additionally, OpenStreetMap Carto has to be present in `../openstreetmap-carto/` and prepared according to: <https://github.com/gravitystorm/openstreetmap-carto/blob/master/DOCKER.md>
-Poland OSM data is required: <https://download.geofabrik.de/europe/poland-latest.osm.pbf>
+> [!NOTE]
+> In case of a non-Nix setup:
+> additionally, to render the base map layer, OpenStreetMap Carto has to be present under the directory which has to be provided via the `CARTO_DIR` environment variable.
+> OpenStreetMap data covering the summits has to be preprocessed and placed in the PostgreSQL database.
+> See the [OpenStreetMap Carto installation instructions](https://github.com/openstreetmap-carto/openstreetmap-carto/blob/master/INSTALL.md).
+> OpenStreetMap data of Poland can be downloaded from [geofabrik.de](https://download.geofabrik.de/europe/poland-latest.osm.pbf).
 
 To run the rendering process, execute the following:
 
-```sh
+```shell
 sota render
 ```
 
@@ -67,6 +71,6 @@ The output directory is specified by the `SOTA_OUTPUT` environment variable and 
 
 To run the final typesetting, execute the following:
 
-```sh
+```shell
 latexmk -lualatex -output-directory=$SOTA_OUTPUT $SOTA_OUTPUT/*.tex
 ```
