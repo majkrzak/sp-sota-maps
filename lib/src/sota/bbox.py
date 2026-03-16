@@ -64,6 +64,10 @@ class Bbox:
     def xxyy(self):
         return self.xl, self.xh, self.yl, self.yh
 
+    @property
+    def yxyx(self):
+        return self.yl, self.xl, self.yh, self.xh
+
     def t(self, epsg: int) -> Self:
         if epsg == self.epsg:
             return self

@@ -1,11 +1,12 @@
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import ClassVar, Optional, Self
+from urllib.parse import urlencode
 
 import geopandas as gpd
 import numpy as np
 from affine import Affine
 from geopandas import GeoDataFrame
-from owslib.wfs import WebFeatureService
 from rasterio import open as rio_open
 from rasterio.merge import merge as rio_merge
 from shapely import union_all
@@ -30,21 +31,29 @@ class Hmap:
     def find(cls, bbox: Bbox) -> Optional[Self]:
         """Find most recent height map data containing given bounding box."""
 
-        YEARS = (2024, 2023, 2022, 2021, 2020, 2019, 2018)
-
-        WFS = WebFeatureService(
-            "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NumerycznyModelTerenuEVRF2007/WFS/Skorowidze",
-            version="2.0.0",
-        )
+        YEARS = (2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018)
 
         def read_wfs(bbox, year):
-            response = WFS.getfeature(
-                typename=[f"gugik:SkorowidzNMT{year}"],
-                bbox=bbox.t(2180).r().xyxy,
+            index = download(
+                "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NumerycznyModelTerenuEVRF2007/WFS/Skorowidze?"
+                + urlencode(
+                    {
+                        "service": "WFS",
+                        "version": "2.0.0",
+                        "request": "GetFeature",
+                        "bbox": "{},{},{},{},urn:ogc:def:crs:EPSG::2180".format(
+                            *bbox.t(2180).r().yxyx
+                        ),
+                        "typenames": f"gugik:SkorowidzNMT{year}",
+                    }
+                ),
+                f"SkorowidzNMT{year}"
+                + ("_{}_{}_{}_{}".format(*bbox.t(2180).r().yxyx))
+                + ".xml",
             )
 
             try:
-                return gpd.read_file(response)
+                return gpd.read_file(index)
             except:
                 return None
 

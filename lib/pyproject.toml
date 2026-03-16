@@ -3,7 +3,6 @@ dynamic = ["version"]
 name = "sp-sota-maps"
 authors = [{ name = "Piotr Majkrzak", email = "piotr@majkrzak.dev" }]
 dependencies = [
-  "owslib",
   "pyproj",
   "geopandas",
   "pandas",
