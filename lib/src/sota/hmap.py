@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import lru_cache
 from typing import ClassVar, Optional, Self
 from urllib.parse import urlencode
 
@@ -54,8 +53,8 @@ class Hmap:
 
             try:
                 return gpd.read_file(index)
-            except:
-                return None
+            except IndexError:
+                pass
 
         def _build_zone(frame: GeoDataFrame) -> Optional[Self]:
             if not bbox.t(cls.EPSG).p().covered_by(union_all(frame.geometry)):
