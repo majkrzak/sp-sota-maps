@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from logging import DEBUG, ERROR, INFO, basicConfig
 from typing import Optional
 
-from click import group, option, argument
+from click import group, option
 from rich.logging import RichHandler
 from rich.progress import BarColumn, Progress, TaskProgressColumn, TextColumn
 from rich_click import RichCommand, RichGroup
@@ -11,7 +11,6 @@ from .layers import LAYERS
 from .reference import Reference
 from .summit import Summit
 from .view_port import ViewPort
-from .queries import QUERIES
 
 progress = Progress(
     TextColumn("[progress.description]{task.description}"),
@@ -95,16 +94,6 @@ def render(
 
         executor.shutdown()
 
-@main.command(cls=RichCommand)
-@argument("query")
-def query(query: str):
-    """Executes predefined query"""
-
-    f = next(filter(lambda x: x.__name__ == query, QUERIES))
-    if f is None:
-        raise KeyError(f"Unknown predefined query: {query}")
-    else:
-        f()
 
 if __name__ == "__main__":
     main()
