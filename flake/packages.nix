@@ -6,7 +6,7 @@
 }:
 let
   project = inputs.pyproject-nix.lib.project.loadPyproject {
-    projectRoot = ../../lib;
+    projectRoot = ../lib;
   };
 in
 {
@@ -90,7 +90,7 @@ in
       carto-service-name = lib.baseNameOf carto-service;
     in
     {
-      packages.sota-unwrapped = python.pkgs.buildPythonPackage (
+      packages.sota = python.pkgs.buildPythonPackage (
         (project.renderers.buildPythonPackage {
           inherit python;
         })
@@ -103,26 +103,25 @@ in
           nativeBuildInputs = with pkgs; [ pkg-config ];
         }
       );
-      packages.sota = pkgs.buildEnv {
-        name = "sota-${version}";
+      packages.default = pkgs.buildEnv {
+        name = "sp-sota-maps-${version}";
         nativeBuildInputs = with pkgs; [ makeWrapper ];
         paths = with self'.packages; [
-          sota-unwrapped
+          sota
         ];
         pathsToLink = [
           "/"
           "/bin"
+          "/lib"
         ];
         postBuild = ''
-          for i in $out/bin/*; do
-            wrapProgram "$i" \
-              --run 'systemctl --user link ${carto-service}' \
-              --run 'systemctl --user start ${carto-service-name}' \
-              --run 'export PGHOST="$XDG_RUNTIME_DIR/${carto-service-name}"' \
-              --set CARTO_DIR ${carto-style}
-          done
+          wrapProgram "$out/bin/sota" \
+            --run 'systemctl --user link ${carto-service}' \
+            --run 'systemctl --user start ${carto-service-name}' \
+            --run 'export PGHOST="$XDG_RUNTIME_DIR/${carto-service-name}"' \
+            --set CARTO_DIR ${carto-style}
         '';
-        meta = self'.packages.sota-unwrapped;
+        #meta = self'.packages.sota-unwrapped;
       };
     };
 }

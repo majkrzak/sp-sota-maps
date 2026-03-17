@@ -13,12 +13,12 @@ Due to the data sources used, the coverage of the project is limited to SP regio
 The recommended way of getting the `sota` helper utility into the scope, together with all its dependencies, is via the [`nix shell`](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-env-shell.html) command.
 
 ```shell
-nix shell github:majkrzak/sp-sota-maps#sota
+nix shell github:majkrzak/sp-sota-maps
 ```
 
 > [!NOTE]
 > Due to the OpenStreetMap data dependencies and its size, the build process can take up to 2 hours and result in about 20 GiB of disk space consumed.
-> If base map rendering is not required, the `sota-unwrapped` package can be used instead of `sota`.
+> If base map rendering is not required, the `sota` python package can be explicitly used instead of default one.
 
 ### Baking or preloading the cache
 
