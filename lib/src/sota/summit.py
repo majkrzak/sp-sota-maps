@@ -102,6 +102,7 @@ class Summit(metaclass=MetaSummit):
     _peak: Point | None = field(init=False, default=None)
     _gminas: list[Gmina] | None = field(init=False, default=None)
     _parks: list[Park] | None = field(init=False, default=None)
+    _chunk: Chunk | None = field(init=False, default=None)
 
     @property
     def name(self) -> str:

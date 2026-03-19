@@ -1,6 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
 from logging import DEBUG, ERROR, INFO, basicConfig
-from typing import Optional
 
 from click import group, option
 from rich.logging import RichHandler
@@ -23,22 +22,20 @@ progress = Progress(
 @group(cls=RichGroup)
 @option("--verbose", default=False, is_flag=True)
 @option("--quiet", default=False, is_flag=True)
-def main(verbose: bool, quiet: bool):
+def main(*,verbose: bool, quiet: bool) -> None:
     basicConfig(
-        level=DEBUG if verbose else ERROR if quiet else INFO, handlers=[RichHandler()]
+        level=DEBUG if verbose else ERROR if quiet else INFO, handlers=[RichHandler()],
     )
 
 
 @main.group(cls=RichGroup)
-def cache():
-    """Cache management"""
-    pass
+def cache() -> None:
+    """Cache management."""
 
 
 @cache.command(cls=RichCommand)
-def bake():
-    """Bake the cache"""
-
+def bake() -> None:
+    """Bake the cache."""
     with progress:
         task = progress.add_task("Baking the cache", total=len(Summit), extra="")
         for summit in Summit:
@@ -54,9 +51,9 @@ def bake():
 
 
 @cache.command(cls=RichCommand)
-def preload():
-    """Preload the cache"""
-    raise NotImplementedError()
+def preload() -> None:
+    """Preload the cache."""
+    raise NotImplementedError
 
 
 @main.command(cls=RichCommand)
@@ -65,9 +62,9 @@ def preload():
 @option("-l", "--layer", type=str)
 @option("-w", "--workers", type=int, default=10)
 def render(
-    overwrite: bool, reference: Optional[str], layer: Optional[str], workers: int
-):
-    """Render output"""
+    *,overwrite: bool, reference: str | None, layer: str | None, workers: int,
+)-> None:
+    """Render output."""
     executor = ThreadPoolExecutor(max_workers=workers)
 
     summits = Summit if not reference else [Summit[Reference.from_str(reference)]]
@@ -76,7 +73,7 @@ def render(
     with progress:
         tasks = {
             Layer.name: progress.add_task(
-                f"Rendering {Layer.name} layer", total=len(summits), extra=""
+                f"Rendering {Layer.name} layer", total=len(summits), extra="",
             )
             for Layer in layers
         }
@@ -86,7 +83,7 @@ def render(
 
             for Layer in layers:
 
-                def task(layer):
+                def task(layer: Layer) -> None:
                     if overwrite or not layer.exists:
                         layer.render()
                     progress.advance(tasks[layer.name])
