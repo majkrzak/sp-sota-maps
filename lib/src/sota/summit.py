@@ -183,7 +183,7 @@ class Summit(metaclass=MetaSummit):
         if self._chunk is None:
             self._chunk = pickled(
                 f"{self.reference:slug}.chunk",
-                lambda: Chunk.find(Bbox.new(self.peak, 2000)),
+                lambda: Chunk.find(Bbox.new(self.peak, 1500)),
             )
         if self._chunk is None:
             raise ValueError
