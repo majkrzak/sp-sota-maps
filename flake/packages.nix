@@ -103,6 +103,7 @@ in
           nativeBuildInputs = with pkgs; [ pkg-config ];
         }
       );
+      packages.python = pkgs.python3.withPackages (_: [ self'.packages.sota ]);
       packages.default = pkgs.buildEnv {
         name = "sp-sota-maps-${version}";
         nativeBuildInputs = with pkgs; [ makeWrapper ];
@@ -121,7 +122,6 @@ in
             --run 'export PGHOST="$XDG_RUNTIME_DIR/${carto-service-name}"' \
             --set CARTO_DIR ${carto-style}
         '';
-        #meta = self'.packages.sota-unwrapped;
       };
     };
 }

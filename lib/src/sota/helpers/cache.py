@@ -4,6 +4,8 @@ from pickle import dump, load
 from urllib.parse import urlparse
 
 from requests import get
+from .. import __version__
+
 
 from .. import CACHE_DIR
 
@@ -11,7 +13,7 @@ from .. import CACHE_DIR
 def download(url, name=None):
     path = join(CACHE_DIR, f"{name or basename(urlparse(url).path)}.xz")
     if not isfile(path):
-        response = get(url)
+        response = get(url, headers= {'user-agent':f'sp-sota-maps/{__version__}'})
         with open(path, "wb") as f:
             f.write(response.content)
 

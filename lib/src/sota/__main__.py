@@ -47,6 +47,7 @@ def bake():
             _ = summit.peak
             _ = summit.gminas
             _ = summit.parks
+            _ = summit.chunk
             progress.advance(task)
         progress.update(task, extra="done!")
     return 0

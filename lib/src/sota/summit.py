@@ -1,10 +1,13 @@
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from functools import cache
-from typing import Iterable, Optional, Self
+from typing import Self
 
 from pandas import DataFrame, read_csv
 from shapely import Point
 
+from .bbox import Bbox
+from .chunk import Chunk
 from .gmina import Gmina
 from .helpers.cache import download, pickled
 from .park import Park
@@ -51,7 +54,7 @@ class MetaSummit(type):
                         "OM/PO-040",
                         # "UT/CA-189", # Partially in Poland, no height data for peak available
                         # "UT/CA-234", # Border peek, part of zone height data missing
-                    ]
+                    ],
                 )
             )
         ]
@@ -79,11 +82,11 @@ class MetaSummit(type):
 
     def __getitem__(cls, reference: Reference) -> Self:
         if f"{reference}" not in cls.SUMMITS.index:
-            raise KeyError()
+            raise KeyError
 
         return Summit(reference)
 
-    def __iter__(cls) -> Iterable[Self]:
+    def __iter__(cls) -> Iterator[Self]:
         for reference in cls.SUMMITS.index:
             yield Summit(Reference.from_str(reference))
 
@@ -95,10 +98,10 @@ class MetaSummit(type):
 class Summit(metaclass=MetaSummit):
 
     reference: Reference
-    _zone: Optional[Zone] = field(init=False, default=None)
-    _peak: Optional[Point] = field(init=False, default=None)
-    _gminas: Optional[list[Gmina]] = field(init=False, default=None)
-    _parks: Optional[list[Park]] = field(init=False, default=None)
+    _zone: Zone | None = field(init=False, default=None)
+    _peak: Point | None = field(init=False, default=None)
+    _gminas: list[Gmina] | None = field(init=False, default=None)
+    _parks: list[Park] | None = field(init=False, default=None)
 
     @property
     def name(self) -> str:
@@ -138,7 +141,7 @@ class Summit(metaclass=MetaSummit):
                 lambda: Zone.find(self.catalog_lat, self.catalog_lon, self.catalog_alt),
             )
         if self._zone is None:
-            raise ValueError()
+            raise ValueError
         return self._zone
 
     @property
@@ -149,7 +152,7 @@ class Summit(metaclass=MetaSummit):
                 lambda: self.zone.peak,
             )
         if self._peak is None:
-            raise ValueError()
+            raise ValueError
         return self._peak
 
     @property
@@ -160,7 +163,7 @@ class Summit(metaclass=MetaSummit):
                 lambda: Gmina.find(self.zone.shape),
             )
         if self._gminas is None:
-            raise ValueError()
+            raise ValueError
         return self._gminas
 
     @property
@@ -171,5 +174,16 @@ class Summit(metaclass=MetaSummit):
                 lambda: Park.find(self.zone.shape),
             )
         if self._parks is None:
-            raise ValueError()
+            raise ValueError
         return self._parks
+
+    @property
+    def chunk(self) -> Chunk:
+        if self._chunk is None:
+            self._chunk = pickled(
+                f"{self.reference:slug}.chunk",
+                lambda: Chunk.find(Bbox.new(self.peak, 4000)),
+            )
+        if self._chunk is None:
+            raise ValueError
+        return self._chunk
