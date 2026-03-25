@@ -9,8 +9,6 @@
     pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
     openstreetmap-carto.url = "github:openstreetmap-carto/openstreetmap-carto";
     openstreetmap-carto.flake = false;
-    poland-osm-pbf.url = "https://download.geofabrik.de/europe/poland-260101.osm.pbf";
-    poland-osm-pbf.flake = false;
   };
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./flake);
 }

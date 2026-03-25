@@ -32,60 +32,43 @@ in
           cp carto.xml $out
         '';
       };
-      carto-data = pkgs.stdenv.mkDerivation {
-        name = "openstreetmap-carto-data";
-        src = inputs.openstreetmap-carto;
-        nativeBuildInputs =
-          with pkgs;
-          [
-            osm2pgsql
-          ]
-          ++ [ postgres ];
-        configurePhase = ''
-          export PGDATA="$(pwd)/pgdata";
-          export PGHOST="$(pwd)";
-          export PGDATABASE="gis";
-          export PGUSER="gis";
-        '';
-        buildPhase = ''
-          initdb \
-            --encoding=UTF8 \
-            --username=gis
-          pg_ctl -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" start
-          createdb
-          psql -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
-          osm2pgsql \
-            --output flex \
-            --style openstreetmap-carto-flex.lua \
-            --input-reader=pbf "${inputs.poland-osm-pbf}"
-          psql -f indexes.sql
-          psql -f functions.sql
-          psql -f common-values.sql
-          psql -c 'VACUUM FULL FREEZE ANALYZE'
-          pg_ctl stop
-        '';
-        installPhase = ''
-          mv pgdata "$out"
-        '';
-      };
+      carto-init = pkgs.writeShellScript "carto-init" ''
+        set -e
+        ${lib.getExe' pkgs.osm2pgsql "osm2pgsql"} -O flex -S "${inputs.openstreetmap-carto}/openstreetmap-carto-flex.lua" --input-reader=xml -
+        ${lib.getExe' postgres "psql"} -f "${inputs.openstreetmap-carto}/indexes.sql"
+        ${lib.getExe' postgres "psql"} -f "${inputs.openstreetmap-carto}/functions.sql"
+        ${lib.getExe' postgres "psql"} -f "${inputs.openstreetmap-carto}/common-values.sql"
+        ${
+          lib.getExe (
+            pkgs.python3.withPackages (
+              p: with p; [
+                pyyaml
+                requests
+                psycopg2
+              ]
+            )
+          )
+        } "${inputs.openstreetmap-carto}/scripts/get-external-data.py" --config "${inputs.openstreetmap-carto}/external-data.yml" --cache --data "''${SOTA_CACHE:-./cache/}"
+      '';
       carto-service = pkgs.writeText "carto.service" ''
         [Unit]
         [Service]
+        Type=notify
         RuntimeDirectory=%n
         PrivateMounts=true
-        PrivateTmp=disconnected
+        PrivateTmp=true
         ProtectSystem=strict
         BindReadOnlyPaths=/nix/store
         AmbientCapabilities=CAP_SYS_ADMIN
-        ExecStart=${pkgs.writeShellScript "carto-start" ''
-          set -e
-          cp -R "${carto-data}" /tmp/pgdata
-          chmod -R u=rwX,og= /tmp/pgdata
-          ${lib.getExe' postgres "postgres"} \
-           -c listen_addresses= \
-           -c unix_socket_directories="''${RUNTIME_DIRECTORY:?}"  \
-           -D "/tmp/pgdata"
-        ''}
+        Environment=PGDATA="%T/pgdata"
+        Environment=PGHOST="%t/%n"
+        Environment=PGDATABASE="gis"
+        Environment=PGUSER="gis"
+        ExecStartPre=mkdir "''${PGDATA}"
+        ExecStartPre=${lib.getExe' postgres "initdb"} --encoding=UTF8 --username=gis
+        ExecStart=${lib.getExe' postgres "postgres"} -c listen_addresses= -c unix_socket_directories="''${PGHOST}" -D "''${PGDATA}"
+        ExecStartPost=${lib.getExe' postgres "createdb"} 
+        ExecStartPost=${lib.getExe' postgres "psql"} -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
       '';
       carto-service-name = lib.baseNameOf carto-service;
     in
@@ -113,14 +96,16 @@ in
         pathsToLink = [
           "/"
           "/bin"
-          "/lib"
         ];
         postBuild = ''
           wrapProgram "$out/bin/sota" \
-            --run 'systemctl --user link ${carto-service}' \
+            --run 'systemctl --user --runtime link ${carto-service}' \
             --run 'systemctl --user start ${carto-service-name}' \
             --run 'export PGHOST="$XDG_RUNTIME_DIR/${carto-service-name}"' \
-            --set CARTO_DIR ${carto-style}
+            --set PGDATABASE gis \
+            --set PGUSER gis \
+            --set CARTO_DIR ${carto-style} \
+            --set CARTO_INIT ${carto-init}
         '';
       };
     };

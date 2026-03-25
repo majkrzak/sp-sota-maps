@@ -1,5 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
 from logging import DEBUG, ERROR, INFO, basicConfig
+from os import environ
+from subprocess import run
+from xml.etree import ElementTree as ET
 
 from click import group, option
 from rich.logging import RichHandler
@@ -47,7 +50,6 @@ def bake() -> None:
             _ = summit.chunk
             progress.advance(task)
         progress.update(task, extra="done!")
-    return 0
 
 
 @cache.command(cls=RichCommand)
@@ -55,6 +57,34 @@ def preload() -> None:
     """Preload the cache."""
     raise NotImplementedError
 
+
+@main.group(cls=RichGroup)
+def carto() -> None:
+    """Carto management."""
+
+@carto.command(cls=RichCommand)
+def load() -> None:
+    """Load OSM data into the database."""
+    nodes = sorted({
+        node for summit in Summit for node in summit.chunk.nodes
+    })
+    ways = sorted({
+        way for summit in Summit for way in summit.chunk.ways
+    })
+    relations = sorted({
+        relation for summit in Summit for relation in summit.chunk.relations
+    })
+
+
+    root = ET.Element("osm", version="0.6")
+    root.extend(n.to_xml() for n in nodes)
+    root.extend(w.to_xml() for w in ways)
+    root.extend(r.to_xml() for r in relations)
+
+    run(
+        [environ.get("CARTO_INIT")],
+        check=False, input=ET.tostring(root),
+    )
 
 @main.command(cls=RichCommand)
 @option("-r", "--overwrite", type=bool, default=False, is_flag=True)

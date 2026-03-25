@@ -7,9 +7,126 @@ from .helpers.cache import download
 
 __all__ = ["Chunk"]
 
+@dataclass(eq=True, order=True, frozen=True)
+class Tag:
+    k: str
+    v: str
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        k = e.attrib["k"]
+        v = e.attrib["v"]
+
+        return Tag(k,v)
+
+    def to_xml(self) -> ET.Element:
+        return ET.Element("tag", k=self.k, v=self.v)
+
+
+@dataclass(eq=True, order=True, frozen=True)
+class Node:
+    id: int
+    visible: bool
+    lat: float
+    lon: float
+    tags: tuple[Tag]
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        id = int(e.attrib["id"])
+        visible = e.attrib["visible"] != "false"
+        lat = float(e.attrib["lat"])
+        lon = float(e.attrib["lon"])
+        tags = tuple(Tag.from_xml(t) for t in e.iter("tag"))
+
+        return Node(id, visible, lat, lon, tags)
+
+    def to_xml(self) -> ET.Element:
+        e = ET.Element("node", id=str(self.id), visible="true" if self.visible else "false", lat=str(self.lat), lon=str(self.lon))
+        e.extend(tag.to_xml() for tag in self.tags)
+        return e
+
+@dataclass(eq=True, order=True, frozen=True)
+class Nd:
+    ref: int
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        ref = int(e.attrib["ref"])
+
+        return Nd(ref)
+
+    def to_xml(self) -> ET.Element:
+        return ET.Element("nd", ref=str(self.ref))
+
+@dataclass(eq=True, order=True, frozen=True)
+class Way:
+    id: int
+    visible: bool
+    nodes: tuple[int]
+    tags: tuple[Tag]
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        id = int(e.attrib["id"])
+        visible = e.attrib["visible"] != "false"
+        nodes = tuple(Nd.from_xml(n) for n in e.iter("nd"))
+        tags = tuple(Tag.from_xml(t) for t in e.iter("tag"))
+
+        return Way(id, visible, nodes, tags)
+
+    def to_xml(self) -> ET.Element:
+        e = ET.Element("way", id=str(self.id), visible="true" if self.visible else "false")
+        e.extend(node.to_xml() for node in self.nodes)
+        e.extend(tag.to_xml() for tag in self.tags)
+        return e
+
+@dataclass(eq=True, order=True, frozen=True)
+class Member:
+    type: str
+    ref: int
+    role: str
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        type = str(e.attrib["type"])
+        ref = int(e.attrib["ref"])
+        role = str(e.attrib["role"])
+
+        return Member(type, ref, role)
+
+    def to_xml(self) -> ET.Element:
+        return ET.Element("member", type=self.type, ref=str(self.ref), role=self.role)
+
+@dataclass(eq=True, order=True, frozen=True)
+class Relation:
+    id: int
+    visible: bool
+    members: tuple[Member]
+    tags: tuple[Tag]
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        id = int(e.attrib["id"])
+        visible = e.attrib["visible"] != "false"
+        members = tuple(Member.from_xml(n) for n in e.iter("member"))
+        tags = tuple(Tag.from_xml(t) for t in e.iter("tag"))
+
+        return Relation(id, visible, members, tags)
+
+    def to_xml(self) -> ET.Element:
+        e = ET.Element("relation", id=str(self.id), visible="true" if self.visible else "false")
+        e.extend(member.to_xml() for member in self.members)
+        e.extend(tag.to_xml() for tag in self.tags)
+        return e
+
+
 @dataclass
 class Chunk:
-    et: ET
+    nodes: tuple[Node]
+    ways: tuple[Way]
+    relations: tuple[Relation]
+
 
     @classmethod
     def find(cls, bbox: Bbox) -> Self:
@@ -19,4 +136,9 @@ class Chunk:
         data = download(f"https://api.openstreetmap.org/api/0.6/map?bbox={left},{bottom},{right},{top}",
         f"{left}_{bottom}_{right}_{top}.osm")
 
-        return Chunk(ET.parse(data))
+        et = ET.parse(data)
+        nodes = tuple(Node.from_xml(n) for n in et.getroot().iter("node"))
+        ways = tuple(Way.from_xml(w) for w in et.getroot().iter("way"))
+        relations = tuple(Relation.from_xml(r) for r in et.getroot().iter("relation"))
+
+        return Chunk(nodes,ways,relations)

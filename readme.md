@@ -16,10 +16,6 @@ The recommended way of getting the `sota` helper utility into the scope, togethe
 nix shell github:majkrzak/sp-sota-maps
 ```
 
-> [!NOTE]
-> Due to the OpenStreetMap data dependencies and its size, the build process can take up to 2 hours and result in about 20 GiB of disk space consumed.
-> If base map rendering is not required, the `sota` python package can be explicitly used instead of default one.
-
 ### Baking or preloading the cache
 
 A file system cache is used by the library to reduce heavy, repetitive calculations and load on the data servers.
@@ -44,6 +40,19 @@ sota cache preload
 > Cache uses `pickle` as a storage format, which allows arbitrary code execution during unpickling.
 > Ensure you trust me and the GitHub.
 
+### Loading OSM data into PostgreSQL
+
+Base-map rendering requires OpenStreetMap data covering the summits to be preprocessed and placed in the PostgreSQL database. This can be achieved by executing the following:
+
+```shell
+sota carto load
+```
+
+> [!NOTE]
+> In case of a non-Nix setup:
+> For the default OpenStreetMap Carto style, [installation instructions](https://github.com/openstreetmap-carto/openstreetmap-carto/blob/master/INSTALL.md) can be followed. OpenStreetMap data for Poland can be downloaded from [geofabrik.de](https://download.geofabrik.de/europe/poland-latest.osm.pbf).
+> The `sota` helper can still be used to load it, by downloading OpenStreetMap data only from summit regions. It requires the initialization script wrapping the `osm2pgsql` tool to be specified by the `CARTO_INIT` environment variable.
+
 ### Rendering map layers and other files
 
 All map layers will be plotted and saved as PDF files. Besides that, TEX and other files will be generated.
@@ -51,10 +60,7 @@ The output directory is specified by the `SOTA_OUTPUT` environment variable and 
 
 > [!NOTE]
 > In case of a non-Nix setup:
-> additionally, to render the base map layer, OpenStreetMap Carto has to be present under the directory which has to be provided via the `CARTO_DIR` environment variable.
-> OpenStreetMap data covering the summits has to be preprocessed and placed in the PostgreSQL database.
-> See the [OpenStreetMap Carto installation instructions](https://github.com/openstreetmap-carto/openstreetmap-carto/blob/master/INSTALL.md).
-> OpenStreetMap data of Poland can be downloaded from [geofabrik.de](https://download.geofabrik.de/europe/poland-latest.osm.pbf).
+> additionally, to render the base-map layer, OpenStreetMap Carto has to be present under the directory which has to be provided via the `CARTO_DIR` environment variable.
 
 To run the rendering process, execute the following:
 

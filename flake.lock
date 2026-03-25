@@ -80,18 +80,6 @@
         "type": "github"
       }
     },
-    "poland-osm-pbf": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-KaFDOKYKAnwMkgtvZnA+L/M2gTbiFSWKB43ev+8oncM=",
-        "type": "file",
-        "url": "https://download.geofabrik.de/europe/poland-260101.osm.pbf"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://download.geofabrik.de/europe/poland-260101.osm.pbf"
-      }
-    },
     "pyproject-nix": {
       "inputs": {
         "nixpkgs": [
@@ -118,7 +106,6 @@
         "import-tree": "import-tree",
         "nixpkgs": "nixpkgs",
         "openstreetmap-carto": "openstreetmap-carto",
-        "poland-osm-pbf": "poland-osm-pbf",
         "pyproject-nix": "pyproject-nix",
         "treefmt-nix": "treefmt-nix"
       }
