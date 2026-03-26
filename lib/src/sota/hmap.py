@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import ClassVar, Optional, Self
+from typing import ClassVar, Self
 from urllib.parse import urlencode
 
 import geopandas as gpd
@@ -27,9 +27,8 @@ class Hmap:
     reports: list[str]
 
     @classmethod
-    def find(cls, bbox: Bbox) -> Optional[Self]:
+    def find(cls, bbox: Bbox) -> Self | None:
         """Find most recent height map data containing given bounding box."""
-
         YEARS = (2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018)
 
         def read_wfs(bbox, year):
@@ -41,10 +40,10 @@ class Hmap:
                         "version": "2.0.0",
                         "request": "GetFeature",
                         "bbox": "{},{},{},{},urn:ogc:def:crs:EPSG::2180".format(
-                            *bbox.t(2180).r().yxyx
+                            *bbox.t(2180).r().yxyx,
                         ),
                         "typenames": f"gugik:SkorowidzNMT{year}",
-                    }
+                    },
                 ),
                 f"SkorowidzNMT{year}"
                 + ("_{}_{}_{}_{}".format(*bbox.t(2180).r().yxyx))
@@ -56,7 +55,7 @@ class Hmap:
             except IndexError:
                 pass
 
-        def _build_zone(frame: GeoDataFrame) -> Optional[Self]:
+        def _build_zone(frame: GeoDataFrame) -> Self | None:
             if not bbox.t(cls.EPSG).p().covered_by(union_all(frame.geometry)):
                 return None
 
@@ -98,7 +97,7 @@ class Hmap:
                 return zone
 
             for _, group in index.groupby(
-                ["blad_sr_wys", "blad_sr_syt", "zrodlo_danych"]
+                ["blad_sr_wys", "blad_sr_syt", "zrodlo_danych"],
             ):
                 zone = _build_zone(group)
                 if zone is None:
@@ -110,3 +109,5 @@ class Hmap:
                 if zone is None:
                     continue
                 return zone
+
+        return None

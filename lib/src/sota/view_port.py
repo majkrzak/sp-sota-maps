@@ -30,8 +30,7 @@ class ViewPort:
         min_margin: float,
         summit: Summit,
     ) -> Self:
-        """Builds ViewBox for landscape page in 2/3 layout."""
-
+        """Build ViewBox for landscape page in 2/3 layout."""
         bbox = Bbox.new(summit.zone.shape, 0)
         lon = bbox.p().centroid.x
 
@@ -43,16 +42,16 @@ class ViewPort:
                 break
 
         return ViewPort(
-            width, height, scaled_bobx(bbox.t(epsg), width, height, scale), scale
+            width, height, scaled_bobx(bbox.t(epsg), width, height, scale), scale,
         )
 
     @classmethod
-    def a5paper(cls, summit: Summit):
+    def a5paper(cls, summit: Summit) -> Self:
         return cls.new(0.210, 0.148, 0.02, summit)
 
 
 def scaled_bobx(bbox: Bbox, width: float, height: float, scale: int) -> Bbox:
-    """Build scaled bounding box, with oryhinal placed in right 2 thirds of page"""
+    """Build scaled bounding box, with oryhinal placed in right 2 thirds of page."""
     x, y = bbox.p().centroid.x, bbox.p().centroid.y
     x, y = round(x), round(y)
     dx = floor((width * scale) / 2)
@@ -66,6 +65,7 @@ def scaled_bobx(bbox: Bbox, width: float, height: float, scale: int) -> Bbox:
 
 def pick_epsg(lon: float, scale: int) -> int:
     """Pick correct terrestrial reference system.
+
     In Poland for scales lower or equal 10000, PL_UTM is used.
     Otherwise, for more detailed studies, PL-2000.
     """
@@ -75,7 +75,7 @@ def pick_epsg(lon: float, scale: int) -> int:
         if 18 < lon < 24:
             return 32634
         if 24 < lon < 30:
-            return
+            return None
     if scale < 10000:
         if lon < 16.5:
             return 2176
@@ -83,5 +83,7 @@ def pick_epsg(lon: float, scale: int) -> int:
             return 2177
         if 19.5 < lon < 22.5:
             return 2178
-        if 22.5 < lon:
+        if lon > 22.5:
             return 2179
+
+    raise ValueError("Out of range")

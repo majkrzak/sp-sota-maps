@@ -22,6 +22,7 @@ class Bbox:
     @classmethod
     def _new_coords(cls, lat: float, lon: float, radius: float) -> Self:
         """Create Bbox around given coordinates and specified radius.
+
         Coordinates are given in WGS84 Latitude and Longitude and
         radius is given in meters.
         """
@@ -35,6 +36,7 @@ class Bbox:
     @classmethod
     def _new_geometry(cls, geometry: BaseGeometry, radius: float) -> Self:
         """Create Bbox around given Polygon.
+
         Coordinates are given in WGS84 and
         radius is given in meters.
         """
@@ -54,7 +56,7 @@ class Bbox:
         if len(args) == 3 and isinstance(args[0], float) and isinstance(args[1], float):
             return cls._new_geometry(*args)
 
-        raise TypeError()
+        raise TypeError
 
     @property
     def xyxy(self):
@@ -76,7 +78,7 @@ class Bbox:
 
     def r(self) -> Self:
         return Bbox(
-            floor(self.xl), floor(self.yl), ceil(self.xh), ceil(self.yh), self.epsg
+            floor(self.xl), floor(self.yl), ceil(self.xh), ceil(self.yh), self.epsg,
         )
 
     def p(self) -> Polygon:

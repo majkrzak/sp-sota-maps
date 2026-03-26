@@ -24,7 +24,7 @@ class MetaPark(type):
         )
 
         parks = concat(
-            [read_file(file, layer=layer) for layer in list_layers(file).name]
+            [read_file(file, layer=layer) for layer in list_layers(file).name],
         )
 
         parks = parks[~parks.nazwa.astype("str").str.endswith("otulina")]
@@ -61,7 +61,7 @@ class Park(metaclass=MetaPark):
 
         assert (
             parks.full_name.notna().all()
-        ), f"{parks[parks.full_name.isna()].index.values} not in parks.csv"
+        ), f"{parks[parks.full_name.isna()].index.to_numpy()} not in parks.csv"
 
         parks = parks.groupby(["full_name", "POTA", "WWFF"], sort=False).agg(
             {
@@ -69,7 +69,7 @@ class Park(metaclass=MetaPark):
                 "POTA": "first",
                 "WWFF": "first",
                 "geometry": union_all,
-            }
+            },
         )
 
         parks = parks[parks.full_name.ne("") & (parks.POTA.ne("") | parks.WWFF.ne(""))]

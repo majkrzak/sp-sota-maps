@@ -83,7 +83,7 @@ class IsolinesLayer(PyplotLayer):
 
     def plot(self, ax) -> None:
         hmap = self.summit.zone.hmap
-        data = masked_array(hmap.data, mask=~(0 < hmap.data))
+        data = masked_array(hmap.data, mask=~(hmap.data > 0))
 
         ax.contour(
             data,
@@ -148,7 +148,7 @@ class TexLayer(Layer):
                     layers=["osm", "isolines", "zone"],
                     version=__version__,
                     date=datetime.today().strftime("%Y-%m-%d"),
-                )
+                ),
             )
 
 
@@ -198,7 +198,7 @@ class GeoJsonLayer(Layer):
                             )
                             for park in self.summit.parks
                         ),
-                    ]
+                    ],
                 ),
                 f,
             )

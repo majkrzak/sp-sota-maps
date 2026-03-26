@@ -8,7 +8,7 @@ configure_extension(ext, "libmapnik")
 ext.define_macros.extend(
     [
         ("MAPNIK_PLUGINDIR", '"' + variables("libmapnik")["plugins_dir"] + '"'),
-    ]
+    ],
 )
 
 setup(ext_modules=[ext], version=environ.get("version"))

@@ -136,9 +136,58 @@ class Chunk:
         data = download(f"https://api.openstreetmap.org/api/0.6/map?bbox={left},{bottom},{right},{top}",
         f"{left}_{bottom}_{right}_{top}.osm")
 
-        et = ET.parse(data)
-        nodes = tuple(Node.from_xml(n) for n in et.getroot().iter("node"))
-        ways = tuple(Way.from_xml(w) for w in et.getroot().iter("way"))
-        relations = tuple(Relation.from_xml(r) for r in et.getroot().iter("relation"))
+        return Chunk.from_xml(ET.parse(data).getroot())
+
+
+    @classmethod
+    def from_xml(cls, e: ET.Element) -> Self:
+        nodes = tuple(Node.from_xml(n) for n in e.iter("node"))
+        ways = tuple(Way.from_xml(w) for w in e.iter("way"))
+        relations = tuple(reversed(tuple(Relation.from_xml(r) for r in e.iter("relation"))))
 
         return Chunk(nodes,ways,relations)
+
+    def to_xml(self) -> ET.Element:
+        e = ET.Element("osm", version="0.6")
+        e.extend(node.to_xml() for node in self.nodes)
+        e.extend(way.to_xml() for way in self.ways)
+        e.extend(relation.to_xml() for relation in reversed(self.relations))
+        return e
+
+    def __add__(self, other: Self) -> Self:
+        """Merge with another chunk, preserving order."""
+
+        def _merge(lhs, rhs, *, rev=False):
+            i,j = 0,0
+
+            while i < len(lhs) and j < len(rhs):
+                a, b = lhs[i], rhs[j]
+
+                if a < b:
+                    if not rev:
+                        yield a
+                        i += 1
+                    else:
+                        yield b
+                        j += 1
+                elif b < a:
+                    if not rev:
+                        yield b
+                        j += 1
+                    else:
+                        yield a
+                        i += 1
+                else:
+                    yield a
+                    i += 1
+                    j += 1
+
+            yield from lhs[i:]
+            yield from rhs[j:]
+
+
+        nodes = tuple(_merge(self.nodes, other.nodes))
+        ways = tuple(_merge(self.ways, other.ways))
+        relations = tuple(_merge(self.relations, other.relations, rev=True))
+        return Chunk(nodes, ways, relations)
+

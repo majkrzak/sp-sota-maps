@@ -8,7 +8,7 @@ __all__ = ["Reference"]
 @dataclass
 class Reference:
     PATTERN: ClassVar[Pattern[str]] = compile(
-        r"(?P<association>[A-Z0-9]{2})/(?P<region>[A-Z0-9]{2})-(?P<id>[0-9]{3})"
+        r"(?P<association>[A-Z0-9]{2})/(?P<region>[A-Z0-9]{2})-(?P<id>[0-9]{3})",
     )
 
     association: str
@@ -16,18 +16,18 @@ class Reference:
     id: int
 
     def __format__(self, format_spec: str) -> str:
-        if format_spec == "" or format_spec == "full":
+        if format_spec in { "", "full"}:
             return f"{self.association}/{self.region}-{self.id:03}"
-        elif format_spec == "slug":
+        if format_spec == "slug":
             return f"{self.association}{self.region}{self.id:03}"
 
-        raise ValueError()
+        raise ValueError
 
     @classmethod
     def from_str(cls, reference: str) -> Self:
         match = fullmatch(cls.PATTERN, reference)
         if not match:
-            raise ValueError()
+            raise ValueError
 
         return Reference(
             match.group("association"),

@@ -2,7 +2,7 @@ from importlib import resources
 
 from pandas import read_csv
 
-__all__ = ["parks_references", "gminas_references"]
+__all__ = ["gminas_references", "parks_references"]
 
 with (resources.files() / "parks.csv").open("rt") as f:
     parks_references = read_csv(
